@@ -1,0 +1,421 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Perfromance Evaluation &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calibration Economics" href="economics.html" />
+    <link rel="prev" title="Welcome to MetaBCI-VR’s documentation!" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="economics.html" title="Calibration Economics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to MetaBCI-VR’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="perfromance-evaluation">
+<h1>Perfromance Evaluation<a class="headerlink" href="#perfromance-evaluation" title="Permalink to this headline">¶</a></h1>
+<p>Here’s a brief recap of what’s happening in a general brain-computer interface pipeline: Firstly a transducer receives user’s brain signal and produces control signal using complex decoding algorithms. A control interface receiving the signal integrated information from environment as well as the subject’s response signal of the last time period to produce a overall feedback to the user, so as to:</p>
+<ol class="arabic simple">
+<li><p>Inform the user on how his intention is interpreted from his brain activity</p></li>
+<li><p>Elicit reinforcement signal</p></li>
+<li><p>To motive user by displaying only the positive feedback, as employed by many works.</p></li>
+</ol>
+<img alt="_images/bci.png" src="_images/bci.png" />
+<section id="feedback-evaluation">
+<h2>Feedback evaluation<a class="headerlink" href="#feedback-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>Ways to provide BCI feedback includes visual information presentation on screen auditory, AR or VR displays. It can only be evaluated by online experiments.
+ANOVA tests can be used to investigate the significance of the difference, and a questionnaire to evaluate the subjects’ quality of life and motivation.</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>multi-group comparison</dt><dd><p>The problem of BCI-illiteracy must be solved, and the average performance should be controlled to be the same.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>single-group multi-session comparison</dt><dd><p>The training effect must be considered. One method is to compare after training to a stable level</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="assistive-technology-evaluation">
+<h2>Assistive technology evaluation<a class="headerlink" href="#assistive-technology-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>The auxiliary equipment connected with BCI system includes automatic wheelchair, artificial limb and communication equipment. These devices usually adopt the self paced setting, and we cannot accurately know the “true intention signal” of the subjects (such as using the sampling rate of 1Hz), so it is difficult to compare the performance differences between BCI auxiliary systems with simple standards.
+One idea is that it must meet the minimum requirements of such equipment. For example, the fault tolerance rate of automatic wheelchair is very low, but there are not so strict requirements for typewriter. Please see [??evaluation baseline of assistive technology]</p>
+<p>Another idea is to specify a consent competition for BCI of the same type of task and set the same evaluation criteria. Tasks that may be involved include virtual navigation, virtual cursor movement, etc. Please see [??BCI Competition in virtual reality].</p>
+</section>
+<section id="control-interface-evaluation">
+<h2>Control Interface evaluation<a class="headerlink" href="#control-interface-evaluation" title="Permalink to this headline">¶</a></h2>
+<section id="reinforcement-information">
+<h3>reinforcement information<a class="headerlink" href="#reinforcement-information" title="Permalink to this headline">¶</a></h3>
+<p>shared control means decisions are made based on combination of transducer output and reinforcement signal. Papers evaluate this part by using ITR increase[2-34,2-35], accuracy imporvement of whole system[2-37].</p>
+<ol class="arabic simple">
+<li><p>single group online</p></li>
+<li><dl class="simple">
+<dt>simulated online</dt><dd><p>It can only be said to be an estimate of the best improvement efficiency.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="errp-detector">
+<h3>ErrP detector<a class="headerlink" href="#errp-detector" title="Permalink to this headline">¶</a></h3>
+<p>Papers evaluate ErrP detector using accuracy of correct trial or error trial[2-34,2-35,2-36], TP and FP[2-37].</p>
+</section>
+</section>
+<section id="multiple-transducer-inputs">
+<h2>multiple transducer inputs<a class="headerlink" href="#multiple-transducer-inputs" title="Permalink to this headline">¶</a></h2>
+<p>If transducers are not running in parallel, i.e. switching between, It should be evaluated online.</p>
+</section>
+<section id="co-adaptive-transducer-evaluation">
+<h2>Co-adaptive transducer evaluation<a class="headerlink" href="#co-adaptive-transducer-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>co-adaptive algorithms run by different mechanism, e.g. using future space[2-26,2-27], leveraging classifier parameter[2-28,2-29].</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>supervised</dt><dd><p>The translator parameter is adjusted according to the subject’s mental state, cued and supervised. If the subject’s mental strategy is expected to change over time, it must be evaluated online. Multi-group experiment was used to evaluate different co-adaptive algorithms. [2-40]perceived loss of control can be used to estimate whether the clssifier needs to be corrected again. A data expansion method [2-28] can alleviate the differences between subjects.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>unsupervised</dt><dd><p>It mainly solves non stationary issues, which may be affected by many aspects, such as electrode placement, subject’s mental strategy change and fatigue. Offline and simulated online can be used as evaluation method.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="static-transducer-evaluation">
+<h2>Static transducer evaluation<a class="headerlink" href="#static-transducer-evaluation" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Besides standard already-exist pipelines to evaluate the performance of an algorithm in the context of brain-computer interface, there should be adequate design space left over for novel methods targeted at non-traditional tasks, e.g. predicting favored human face from subject’s EEG signal[???], which require appropriate metrics to be selected or established.</p>
+<p>There are three major factors that need to be considered when chosing a right evaluation metric, namely 1.) how should we divide subjects into groups? 2.) how should the datasets to be divided into training set and test set? 3.) should the algorithm to be evaluated online or on prerecorded data?</p>
+<p>By introducing three typical evaluation methods, we demonstrate how these parameters are chosen in our package to provide a basic estimation of how well trained algorithm might perform in test session.</p>
+</div></blockquote>
+<p>At the same time, reporting performance needs to follow certain guidelines:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>the evaluation procedure is valid from a statistical and machine learning point of view</p></li>
+<li><p>this procedure is described in sufficient detail</p></li>
+</ol>
+</div></blockquote>
+<section id="online-evaluation">
+<h3>Online evaluation<a class="headerlink" href="#online-evaluation" title="Permalink to this headline">¶</a></h3>
+<p>模型事先给出
+更能代表模型分类表现
+耗费时间
+一次只能测一个模型
+在线评价使用的数据来源于这样的实验：
+1. 被试能接受实时反馈并调整状态
+2. BCI系统必须实时运行。</p>
+<p>在线评价存在一个实时更新的数据流，且通常对于一个被试只能测试一种系统的效能。
+运用在线评价一个模型，检测模型有可能改变被试心理状态，即有关被试内部状态的参量是实时更新的。</p>
+</section>
+<section id="simulated-online-evaluation">
+<h3>Simulated online evaluation<a class="headerlink" href="#simulated-online-evaluation" title="Permalink to this headline">¶</a></h3>
+<p>online为close loop
+不适合用于被试有训练效应
+适用于反应式BCI，如P300
+模拟在线评价使用的数据来源于这样的实验：</p>
+<ol class="arabic simple">
+<li><p>被试能接受实时反馈并调整状态</p></li>
+</ol>
+<p>2. BCI系统必须实时运行。
+运用模拟在线评价一个模型，检测模型被假设为无法改变被试心理状态。
+模拟在线评价的数据流在实验前已经预先决定。</p>
+</section>
+<section id="offline-evaluation">
+<h3>Offline evaluation<a class="headerlink" href="#offline-evaluation" title="Permalink to this headline">¶</a></h3>
+<p>离线评估需要考虑这些因素：
+1. the statistical significance of the reported results
+2. how well the results translate to online BCI operation (factors:temporal drift,feedback)</p>
+</section>
+<section id="offline-hold-out">
+<h3>Offline hold-out<a class="headerlink" href="#offline-hold-out" title="Permalink to this headline">¶</a></h3>
+<p>离线评价使用的数据来源于这样的实验：
+1. 没有实时反馈
+2. 不需要运行BCI系统。</p>
+<p>最好不要shuffle：model 信号的non-stationary，代表最坏的情况，被试在某一阶段的疲劳，心理状态改变。</p>
+</section>
+<section id="offline-cross-validation">
+<h3>Offline cross-validation<a class="headerlink" href="#offline-cross-validation" title="Permalink to this headline">¶</a></h3>
+<p>取几个folds中效果最好的那个作为模型返回
+如果被用来估计模型效果将会是有偏的。</p>
+</section>
+<section id="offline-nested-cross-validation">
+<h3>Offline nested cross-validation<a class="headerlink" href="#offline-nested-cross-validation" title="Permalink to this headline">¶</a></h3>
+<p>用于返回对模型真实效能的估计，一般不返回一个具体的模型
+要能最佳地模拟在线效能，需要尽量达到以下要求
+trials不随机采样
+训练数据少的话用nested cross-validation
+尽量用多个session的数据
+同一个session的数据不该出现在train set和test set里</p>
+<p># training protocol</p>
+<ol class="arabic">
+<li><dl class="simple">
+<dt>calibration-free model：完全不进行calibration过程的模型</dt><dd><ol class="arabic simple">
+<li><p>train set from same dataset ，channel-specific                        仅用于离线模型比较[直接在线解码]</p></li>
+<li><p>train set from multiple datasets，channel-specific                    仅用于离线模型比较</p></li>
+<li><p>train set from multiple datasets，channel-friendly                    可用于离线模型比较，也可直接在线解码[直接在线解码]</p></li>
+<li><p>train set from same dataset ， channel-friendly                       可用于离线模型比较，也可直接在线解码[直接在线解码]</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>one-time calibration model：仅进行一次calibration过程的模型</dt><dd><ol class="arabic simple">
+<li><p>train set from target subject                                        仅用于离线模型比较[训练在线解码]</p></li>
+<li><p>train set from multiple subjects，same dataset ，channel-specific              仅用于离线模型比较[训练在线解码]</p></li>
+<li><p>train set from multiple subjects，multiple datasets，channel-specific  仅用于离线模型比较</p></li>
+<li><p>train set from multiple subjects，multiple datasets，channel-friendly  可用于离线模型比较，也可训练后在线解码[训练在线解码]</p></li>
+<li><p>train set from same dataset ， channel-friendly                       可用于离线模型比较，也可训练后在线解码[训练在线解码]</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>adaptive model：进行多次calibration过程的模型</dt><dd><blockquote>
+<div><ol class="arabic simple">
+<li><p>train set from target subject                                       仅用于离线模型比较[自适应在线解码]</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>train set form multiple subjects，same datasets ，channel-specific        仅用于离线模型比较[自适应在线解码]
+3. train set from multiple subjects，multiple datasets，channel-specific  仅用于离线模型比较
+4. train set from multiple subjects，multiple datasets，channel-friendly  可用于离线模型比较，也可自适应在线解码[自适应在线解码]
+5. train set from multiple subjects，same datasets，channel-friendly              可用于离线模型比较，也可自适应在线解码[自适应在线解码]</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+<p>注：一些标题包含adaptive的方法，由于采用无监督学习，实际上是one-time calibration model。从另一个角度说，自适应参数更新不等于多次calibration</p>
+<p>新模型快速比较
+Test set：只使用目标被试的数据
+1. inter-session(same subject)：体现time-invariant</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>session-size</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><dl class="simple">
+<dt>inter-subject(same dataset)：体现time-invariant，subject-invariant</dt><dd><ol class="arabic simple">
+<li><p>session-size</p></li>
+<li><p>subject-size</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>inter-dataset：体现time-invariant，subject-invariant，task-invariant</dt><dd><ol class="arabic simple">
+<li><p>session-size</p></li>
+<li><p>subject-size</p></li>
+<li><p>dataset-size</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+</section>
+<section id="information-transfer-rate">
+<h2>Information Transfer Rate<a class="headerlink" href="#information-transfer-rate" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[\]</div>
+<p>$$
+ITR_{wolpaw} = log_2M + acc*log_2(acc) + (1-acc)*log_2(frac{1-acc}{M-1})
+$$</p>
+<p>$$
+ITR_{Nykopp} =
+$$</p>
+<p>其中acc为单次trial解码的准确率，M为分类目标数。单位时间的$ITR$由$ITR$值与单位时间内进行的trial数的乘积得到。当范式使用错误相关电位作为增强信号时，修正后的$ITR$为：</p>
+<p>$$
+SR = frac{ITR}{log2M}
+$$</p>
+<p>$$</p>
+<p>WSR =
+begin{cases}
+(2SR - 1)/T {,} SR&gt;0.5 \
+0 {, } SRleq0.5
+end{cases}
+$$</p>
+</section>
+<section id="hypothesis-test">
+<h2>hypothesis test<a class="headerlink" href="#hypothesis-test" title="Permalink to this headline">¶</a></h2>
+<p>### 机会水平检验
+&amp;emsp;&amp;emsp;对分类器准确率是否高于practical chance of level[1-48]的检验能够证明分类器显著优于机会水平。零假设是分类器的表现不高于随机分类的表现：</p>
+<p>$$
+H_0:acc leq acc_{random}
+$$</p>
+<p>$$
+H_1:acc&gt;acc_{random}
+$$</p>
+<blockquote>
+<div><p>比较$acc$的单边置信区间，如果$acc_{random}$在$acc$的单边置信区间外，拒绝原假设，认为分类器的表现显著高于机会水平。</p>
+</div></blockquote>
+<ol class="arabic">
+<li><p>Adjusted Wald Confidence Interval for Classification Accuracy</p>
+<blockquote>
+<div><p>假设在$N$个独立trial中由$K$个被正确分类，对acc的估计为：</p>
+</div></blockquote>
+</li>
+</ol>
+<p>$$
+hat{acc} = frac{K+2}{N+4}
+$$</p>
+<p>$$
+acc_u = hat{acc}+z_{1-alpha/2}sqrtfrac{hat{acc}(1-hat{acc})}{N+4}
+$$</p>
+<p>$$
+acc_l = hat{acc}-z_{1-alpha/2}sqrtfrac{hat{acc}(1-hat{acc})}{N+4}
+$$
+$z_{1-alpha/2}$ is the hypothesis test quantity of standard normal distribution.</p>
+<ol class="arabic simple" start="2">
+<li><p>Adjusted Wald Confidence Interval for Cohen’s Kappa</p></li>
+</ol>
+<p>$$
+κ_{l/r} = frac{acc_{l/u}-acc_0}{1-acc_0}
+$$</p>
+<p>The revised null hypothesis is:
+$$
+H_0:κ leq 0
+$$</p>
+<p>$$
+H_1:κ&gt;0
+$$</p>
+<p>According to [1-9], it is proposed that κ The [1-15] confidence interval in the original work is too conservative, and the revised interval is:</p>
+<p>$$
+κ_l = hat{κ}-z_{1-alpha/2}sqrtfrac{hat{κ}(1-hat{κ})}{(N+4)(1-acc_0)}
+$$</p>
+<p>$$
+κ_l = hat{κ}-z_{1-alpha/2}sqrtfrac{hat{κ}(1-hat{κ})}{(N+4)(1-acc_0)}
+$$</p>
+<p>[1] Billinger M , Daly I , Kaiser V , et al. Is It Significant? Guidelines for Reporting BCI Performance[M]. Springer Berlin Heidelberg, 2012.</p>
+<p>[2] Thomas E , Dyson M , Clerc M . An analysis of performance evaluation for motor-imagery based BCI[J]. Journal of Neural Engineering, 2013, 10(3):031001.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Perfromance Evaluation</a><ul>
+<li><a class="reference internal" href="#feedback-evaluation">Feedback evaluation</a></li>
+<li><a class="reference internal" href="#assistive-technology-evaluation">Assistive technology evaluation</a></li>
+<li><a class="reference internal" href="#control-interface-evaluation">Control Interface evaluation</a><ul>
+<li><a class="reference internal" href="#reinforcement-information">reinforcement information</a></li>
+<li><a class="reference internal" href="#errp-detector">ErrP detector</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multiple-transducer-inputs">multiple transducer inputs</a></li>
+<li><a class="reference internal" href="#co-adaptive-transducer-evaluation">Co-adaptive transducer evaluation</a></li>
+<li><a class="reference internal" href="#static-transducer-evaluation">Static transducer evaluation</a><ul>
+<li><a class="reference internal" href="#online-evaluation">Online evaluation</a></li>
+<li><a class="reference internal" href="#simulated-online-evaluation">Simulated online evaluation</a></li>
+<li><a class="reference internal" href="#offline-evaluation">Offline evaluation</a></li>
+<li><a class="reference internal" href="#offline-hold-out">Offline hold-out</a></li>
+<li><a class="reference internal" href="#offline-cross-validation">Offline cross-validation</a></li>
+<li><a class="reference internal" href="#offline-nested-cross-validation">Offline nested cross-validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#information-transfer-rate">Information Transfer Rate</a></li>
+<li><a class="reference internal" href="#hypothesis-test">hypothesis test</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to MetaBCI-VR’s documentation!</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="economics.html"
+                          title="next chapter">Calibration Economics</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/performance.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="economics.html" title="Calibration Economics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to MetaBCI-VR’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

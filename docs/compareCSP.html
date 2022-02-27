@@ -1,0 +1,226 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Comparing different CSP models &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Compare different models on same datasets" href="compareDifferent.html" />
+    <link rel="prev" title="Example on MOABB datasets" href="parameterSearch.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="compareDifferent.html" title="Compare different models on same datasets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Example on MOABB datasets"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Comparing different CSP models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="comparing-different-csp-models">
+<h1>Comparing different CSP models<a class="headerlink" href="#comparing-different-csp-models" title="Permalink to this headline">¶</a></h1>
+<p>Import necessary modules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.datasets.moabb</span> <span class="kn">import</span> <span class="n">MOABBDataset</span><span class="p">,</span><span class="n">moabb_dataset_list</span>
+<span class="kn">from</span> <span class="nn">Offline.profile.manifest</span> <span class="kn">import</span> <span class="n">BugZero</span>
+<span class="kn">from</span> <span class="nn">Offline.processing.preprocess</span> <span class="kn">import</span> <span class="n">Preprocessor</span>
+<span class="kn">from</span> <span class="nn">Paradigm.base</span> <span class="kn">import</span> <span class="n">SubjectDependentParadigm</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">CSPFactory</span>
+</pre></div>
+</div>
+<p>load datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_name</span> <span class="o">=</span> <span class="n">moabb_dataset_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n_subject</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_subject</span><span class="p">):</span>
+    <span class="n">datasets</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">MOABBDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">,</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Define preprocess pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">preps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:[</span><span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;pick&#39;</span><span class="p">,</span><span class="n">picks</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">)]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Define different CSP structures to compare:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.base</span> <span class="kn">import</span> <span class="n">CSPBase</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.CSSP</span> <span class="kn">import</span> <span class="n">CSSPBase</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.FBCSP</span> <span class="kn">import</span> <span class="n">FBCSP</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.SBCSP</span> <span class="kn">import</span> <span class="n">SBCSP</span>
+
+<span class="n">cspbase</span> <span class="o">=</span> <span class="n">CSPBase</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">csp_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">},</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">csspbase</span> <span class="o">=</span> <span class="n">CSSPBase</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">csp_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">},</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">fbcsp</span> <span class="o">=</span> <span class="n">FBCSP</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">select_ratio</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">h_freq</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span><span class="n">n_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">sbcsp</span> <span class="o">=</span> <span class="n">SBCSP</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">h_freq</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span><span class="n">n_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Define algorithms to train and inspect CSP model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">CSPInspector</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Inspector</span> <span class="kn">import</span> <span class="n">InspectorSyn</span>
+<span class="n">alg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">CSPFactory</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">FBCSP</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">ispt</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="n">CSPInspector</span><span class="p">(</span><span class="n">InspectorSyn</span><span class="p">(</span><span class="n">pos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Define paradigm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span> <span class="o">=</span> <span class="n">SubjectDependentParadigm</span><span class="p">(</span><span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span><span class="n">protocols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">algorithms</span><span class="o">=</span><span class="n">alg</span><span class="p">,</span><span class="n">control_signal_mode</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preps</span><span class="p">,</span><span class="n">inspectors</span><span class="o">=</span><span class="n">ispt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run subject dependent decoding on every subject in the dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">re_subjects</span><span class="p">,</span> <span class="n">trainned_model_subjects</span><span class="p">,</span> <span class="n">df_subjects</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                                                        <span class="n">model</span><span class="o">=</span><span class="n">fbcsp</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                                <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;FBCSP&#39;</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+
+<span class="n">re_subjects_1</span><span class="p">,</span> <span class="n">trainned_model_subjects_1</span><span class="p">,</span> <span class="n">df_subjects_1</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                                                        <span class="n">model</span><span class="o">=</span><span class="n">sbcsp</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                                <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;SBCSP&#39;</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+
+<span class="n">re_subjects_2</span><span class="p">,</span> <span class="n">trainned_model_subjects_2</span><span class="p">,</span> <span class="n">df_subjects_2</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                                                        <span class="n">model</span><span class="o">=</span><span class="n">cspbase</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                                <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;CSPbase&#39;</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+
+<span class="n">re_subjects_3</span><span class="p">,</span> <span class="n">trainned_model_subjects_3</span><span class="p">,</span> <span class="n">df_subjects_3</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                                                        <span class="n">model</span><span class="o">=</span><span class="n">csspbase</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                                <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;CSSP&#39;</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>to see the results after write them to disk:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_subjects</span><span class="p">,</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">para</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_subjects_1</span><span class="p">,</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">para</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_subjects_2</span><span class="p">,</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">)</span>
+<span class="n">para</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_subjects_3</span><span class="p">,</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can resume the results from disk and display the results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>para.read_df_from_file(${your file name})
+</pre></div>
+</div>
+<p>Now we visualize the results of model FBCSP, SBCSP, CSP and CSSP using boxplot:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df_subjects</span><span class="p">)</span>       <span class="c1">#FBCSP</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df_subjects_1</span><span class="p">)</span>     <span class="c1">#SBCSP</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df_subjects_2</span><span class="p">)</span>     <span class="c1">#CSP</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df_subjects_3</span><span class="p">)</span>     <span class="c1">#CSSP</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<blockquote>
+<div><img alt="_images/compareCSP_f12.png" src="_images/compareCSP_f12.png" />
+</div></blockquote>
+<p>accuary of FBCSP on dataset</p>
+<blockquote>
+<div><img alt="_images/compareCSP_f13.png" src="_images/compareCSP_f13.png" />
+</div></blockquote>
+<p>accuary of SBCSP on dataset</p>
+<blockquote>
+<div><img alt="_images/compareCSP_f14.png" src="_images/compareCSP_f14.png" />
+</div></blockquote>
+<p>accuary of CSP on dataset</p>
+<blockquote>
+<div><img alt="_images/compareCSP_f15.png" src="_images/compareCSP_f15.png" />
+</div></blockquote>
+<p>accuary of CSSP on dataset</p>
+<p>Now concatenate all models’ results and visualize them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_subjects</span><span class="p">,</span><span class="n">df_subjects_1</span><span class="p">,</span><span class="n">df_subjects_2</span><span class="p">,</span><span class="n">df_subjects_3</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/compareCSP_f16.png" src="_images/compareCSP_f16.png" />
+<p>example code download:</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="parameterSearch.html"
+                          title="previous chapter">Example on MOABB datasets</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="compareDifferent.html"
+                          title="next chapter">Compare different models on same datasets</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/compareCSP.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="compareDifferent.html" title="Compare different models on same datasets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Example on MOABB datasets"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Comparing different CSP models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

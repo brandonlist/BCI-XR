@@ -1,0 +1,181 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome to MetaBCI-VR’s documentation! &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="An Introduction to Paradigm" href="introduction.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="introduction.html" title="An Introduction to Paradigm"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to MetaBCI-VR’s documentation!</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="welcome-to-metabci-vr-s-documentation">
+<h1>Welcome to MetaBCI-VR’s documentation!<a class="headerlink" href="#welcome-to-metabci-vr-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>MetaBCI-VR</strong> is a Python library for offline BCI algorithm development/Benchmarking and for online BCI paradigm design/evaluation.  The github page <a class="reference external" href="https://github.com/brandonlist/MetaBCI-XR">MetaBCI-XR</a> .</p>
+<p>As point out in [???DN3], deeplearning models designed to decode EEG signals need consistency and abstraction that lead to successful reproduction. In a larger
+sense, machine learning models for BCI will gain better claim of their generalization capabilities using standard training procedures. Also with more real environment,
+paradigm designers need a better tool to design specific component using predefined evaluation metrics.</p>
+<p>To meet these demands we develop this package, which provides:</p>
+<ul class="simple">
+<li><p>For algorithm developers an automated and reliable way to evaluete their designs against multiple state-of-the-art methods, either in a offline way leveraging publicly available datasets, or a simulated online way should the algorithm involves adaptive behaviors.</p></li>
+<li><p>For application developers the SDK providing mainstream EEG decoding algorithms implemented in python, as well as communicating interface to 3D engines e.g. Unity3d, so that a BCI with advanced VR/AR user-interface like virtual reality or augmented reality can be easily established with minimum lines of code.</p></li>
+<li><p>For paradigm developers a integrated platform to experiment new paradigms on a set of standardized BCI tasks based on controlled virtual reality environment，so that performance of emerging new methods on a real-life setting can be reasonably compared with SOTA on the same task using identical metrics.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 19%" />
+<col style="width: 30%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Target developers</p></th>
+<th class="head"><p>Paradigm to use</p></th>
+<th class="head"><p>Dataset</p></th>
+<th class="head"><p>Unity Interface</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>offline algorithm developers</p></td>
+<td><p>offline Paradigms</p></td>
+<td><p>public Datasets</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>online algorithm developers</p></td>
+<td><p>simulated-online or online</p></td>
+<td><p>public Dataset or self-collected Dataset</p></td>
+<td><p>flexible version</p></td>
+</tr>
+<tr class="row-even"><td><p>BCI application developers</p></td>
+<td><p>online Paradigms</p></td>
+<td><p>self-collected Dataset</p></td>
+<td><p>fixed version</p></td>
+</tr>
+<tr class="row-odd"><td><p>BCI paradigm developers</p></td>
+<td><p>simulated-online or online</p></td>
+<td><p>self-collected Dataset</p></td>
+<td><p>flexible version with fixed task-metrics</p></td>
+</tr>
+</tbody>
+</table>
+<p>Fixed version of Unity Interface will set up the online experiment by reading from a file from disk created by python GUI. The file contains the type and timing of predefined stimulations and feedbacks used in the experiment, which are decided by the user via GUI after choosing a Paradigm to use. Unity will then excuted predefined stimulations and feedbacks accordingly.</p>
+<p>Flexible version of Unity Interface enables you to decide basically everything that will happen during a trial in synchronous mode, or continuously update your model and the virtual environment at your own pace. At the same time, modules based on TCP/IP and LSL will provide basic synchronous functions between Unity and python module, upon which your own functions can be built.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This project is under active development.</p>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">An Introduction to Paradigm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Perfromance Evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="economics.html">Estimating calibration trial number</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameterSearch.html">Hyper-parameter Search of DL-BCI model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compareCSP.html">Comparing different CSP models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compareDifferent.html">Compare different models on same datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzeFeature.html">Analysis of EEG features</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Welcome to MetaBCI-VR’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="next chapter">An Introduction to Paradigm</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="introduction.html" title="An Introduction to Paradigm"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to MetaBCI-VR’s documentation!</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>
