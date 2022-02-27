@@ -1,0 +1,264 @@
+Perfromance Evaluation
+======================
+
+Here’s a brief recap of what's happening in a general brain-computer interface pipeline: Firstly a transducer receives user's brain signal and produces control signal using complex decoding algorithms. A control interface receiving the signal integrated information from environment as well as the subject's response signal of the last time period to produce a overall feedback to the user, so as to:
+
+1. Inform the user on how his intention is interpreted from his brain activity 
+2. Elicit reinforcement signal 
+3. To motive user by displaying only the positive feedback, as employed by many works.
+
+.. image:: bci.png
+
+Feedback evaluation
+-------------------
+
+Ways to provide BCI feedback includes visual information presentation on screen auditory, AR or VR displays. It can only be evaluated by online experiments. 
+ANOVA tests can be used to investigate the significance of the difference, and a questionnaire to evaluate the subjects' quality of life and motivation. 
+
+1. multi-group comparison
+    The problem of BCI-illiteracy must be solved, and the average performance should be controlled to be the same.
+
+2. single-group multi-session comparison
+    The training effect must be considered. One method is to compare after training to a stable level
+
+
+
+Assistive technology evaluation
+-------------------------------
+
+The auxiliary equipment connected with BCI system includes automatic wheelchair, artificial limb and communication equipment. These devices usually adopt the self paced setting, and we cannot accurately know the "true intention signal" of the subjects (such as using the sampling rate of 1Hz), so it is difficult to compare the performance differences between BCI auxiliary systems with simple standards.
+One idea is that it must meet the minimum requirements of such equipment. For example, the fault tolerance rate of automatic wheelchair is very low, but there are not so strict requirements for typewriter. Please see [??evaluation baseline of assistive technology]
+
+Another idea is to specify a consent competition for BCI of the same type of task and set the same evaluation criteria. Tasks that may be involved include virtual navigation, virtual cursor movement, etc. Please see [??BCI Competition in virtual reality].
+
+
+
+Control Interface evaluation
+----------------------------
+
+reinforcement information
+^^^^^^^^^^^^^^^^^^^^^^^^^
+shared control means decisions are made based on combination of transducer output and reinforcement signal. Papers evaluate this part by using ITR increase[2-34,2-35], accuracy imporvement of whole system[2-37].
+
+
+1. single group online
+
+2. simulated online
+    It can only be said to be an estimate of the best improvement efficiency.
+
+ErrP detector
+^^^^^^^^^^^^^
+Papers evaluate ErrP detector using accuracy of correct trial or error trial[2-34,2-35,2-36], TP and FP[2-37].
+
+
+multiple transducer inputs
+--------------------------
+If transducers are not running in parallel, i.e. switching between, It should be evaluated online. 
+
+
+Co-adaptive transducer evaluation
+---------------------------------
+co-adaptive algorithms run by different mechanism, e.g. using future space[2-26,2-27], leveraging classifier parameter[2-28,2-29].
+
+1. supervised
+    The translator parameter is adjusted according to the subject's mental state, cued and supervised. If the subject's mental strategy is expected to change over time, it must be evaluated online. Multi-group experiment was used to evaluate different co-adaptive algorithms. [2-40]perceived loss of control can be used to estimate whether the clssifier needs to be corrected again. A data expansion method [2-28] can alleviate the differences between subjects.
+
+
+2. unsupervised
+    It mainly solves non stationary issues, which may be affected by many aspects, such as electrode placement, subject's mental strategy change and fatigue. Offline and simulated online can be used as evaluation method.
+
+
+
+Static transducer evaluation
+----------------------------
+    Besides standard already-exist pipelines to evaluate the performance of an algorithm in the context of brain-computer interface, there should be adequate design space left over for novel methods targeted at non-traditional tasks, e.g. predicting favored human face from subject's EEG signal[???], which require appropriate metrics to be selected or established.
+
+    There are three major factors that need to be considered when chosing a right evaluation metric, namely 1.) how should we divide subjects into groups? 2.) how should the datasets to be divided into training set and test set? 3.) should the algorithm to be evaluated online or on prerecorded data?
+
+    By introducing three typical evaluation methods, we demonstrate how these parameters are chosen in our package to provide a basic estimation of how well trained algorithm might perform in test session.
+
+At the same time, reporting performance needs to follow certain guidelines:
+
+ 1. the evaluation procedure is valid from a statistical and machine learning point of view
+ 2. this procedure is described in sufficient detail
+
+ 
+Online evaluation
+^^^^^^^^^^^^^^^^^
+模型事先给出
+更能代表模型分类表现
+耗费时间
+一次只能测一个模型
+在线评价使用的数据来源于这样的实验：
+1. 被试能接受实时反馈并调整状态
+2. BCI系统必须实时运行。
+
+在线评价存在一个实时更新的数据流，且通常对于一个被试只能测试一种系统的效能。
+运用在线评价一个模型，检测模型有可能改变被试心理状态，即有关被试内部状态的参量是实时更新的。
+
+Simulated online evaluation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+online为close loop
+不适合用于被试有训练效应
+适用于反应式BCI，如P300
+模拟在线评价使用的数据来源于这样的实验：
+
+1. 被试能接受实时反馈并调整状态 
+2. BCI系统必须实时运行。
+运用模拟在线评价一个模型，检测模型被假设为无法改变被试心理状态。
+模拟在线评价的数据流在实验前已经预先决定。
+
+Offline evaluation
+^^^^^^^^^^^^^^^^^^
+离线评估需要考虑这些因素：
+1. the statistical significance of the reported results
+2. how well the results translate to online BCI operation (factors:temporal drift,feedback)
+
+
+Offline hold-out 
+^^^^^^^^^^^^^^^^
+离线评价使用的数据来源于这样的实验：
+1. 没有实时反馈 
+2. 不需要运行BCI系统。
+
+最好不要shuffle：model 信号的non-stationary，代表最坏的情况，被试在某一阶段的疲劳，心理状态改变。
+
+Offline cross-validation
+^^^^^^^^^^^^^^^^^^^^^^^^
+取几个folds中效果最好的那个作为模型返回
+如果被用来估计模型效果将会是有偏的。
+
+Offline nested cross-validation 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+用于返回对模型真实效能的估计，一般不返回一个具体的模型
+要能最佳地模拟在线效能，需要尽量达到以下要求
+trials不随机采样
+训练数据少的话用nested cross-validation
+尽量用多个session的数据
+同一个session的数据不该出现在train set和test set里
+
+
+# training protocol
+
+1. calibration-free model：完全不进行calibration过程的模型
+	1. train set from same dataset ，channel-specific 			仅用于离线模型比较[直接在线解码]
+	2. train set from multiple datasets，channel-specific 			仅用于离线模型比较
+	3. train set from multiple datasets，channel-friendly 			可用于离线模型比较，也可直接在线解码[直接在线解码]
+	4. train set from same dataset ， channel-friendly			可用于离线模型比较，也可直接在线解码[直接在线解码]
+2. one-time calibration model：仅进行一次calibration过程的模型
+	1. train set from target subject 					仅用于离线模型比较[训练在线解码]
+	2. train set from multiple subjects，same dataset ，channel-specific 		仅用于离线模型比较[训练在线解码]
+	3. train set from multiple subjects，multiple datasets，channel-specific	仅用于离线模型比较
+	4. train set from multiple subjects，multiple datasets，channel-friendly	可用于离线模型比较，也可训练后在线解码[训练在线解码]
+	5. train set from same dataset ， channel-friendly			可用于离线模型比较，也可训练后在线解码[训练在线解码]
+3. adaptive model：进行多次calibration过程的模型
+	1.  train set from target subject					仅用于离线模型比较[自适应在线解码]		
+    2.  train set form multiple subjects，same datasets ，channel-specific 	仅用于离线模型比较[自适应在线解码]
+	3. train set from multiple subjects，multiple datasets，channel-specific	仅用于离线模型比较
+	4. train set from multiple subjects，multiple datasets，channel-friendly	可用于离线模型比较，也可自适应在线解码[自适应在线解码]
+	5. train set from multiple subjects，same datasets，channel-friendly		可用于离线模型比较，也可自适应在线解码[自适应在线解码]
+注：一些标题包含adaptive的方法，由于采用无监督学习，实际上是one-time calibration model。从另一个角度说，自适应参数更新不等于多次calibration
+
+新模型快速比较
+Test set：只使用目标被试的数据
+1. inter-session(same subject)：体现time-invariant
+	1. session-size
+2. inter-subject(same dataset)：体现time-invariant，subject-invariant
+	1. session-size
+	2. subject-size
+3. inter-dataset：体现time-invariant，subject-invariant，task-invariant
+	1. session-size
+	2. subject-size
+	3. dataset-size
+
+Information Transfer Rate
+-------------------------
+
+.. math::
+$$
+ITR_{wolpaw} = log_2M + acc*log_2(acc) + (1-acc)*log_2(\frac{1-acc}{M-1})
+$$
+
+$$
+ITR_{Nykopp} = 
+$$
+
+其中acc为单次trial解码的准确率，M为分类目标数。单位时间的$ITR$由$ITR$值与单位时间内进行的trial数的乘积得到。当范式使用错误相关电位作为增强信号时，修正后的$ITR$为：
+
+$$
+SR = \frac{ITR}{log2M}
+$$
+
+$$
+	
+WSR =
+\begin{cases}
+(2SR - 1)/T {,\ \ \ \ \ } SR>0.5 \\
+0 {,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ } SR\leq0.5
+\end{cases}
+$$
+
+
+
+hypothesis test
+---------------
+
+### 机会水平检验
+&emsp;&emsp;对分类器准确率是否高于practical chance of level[1-48]的检验能够证明分类器显著优于机会水平。零假设是分类器的表现不高于随机分类的表现：
+
+$$
+H_0:acc \leq acc_{random}
+$$
+
+$$
+H_1:acc>acc_{random}
+$$
+
+    比较$acc$的单边置信区间，如果$acc_{random}$在$acc$的单边置信区间外，拒绝原假设，认为分类器的表现显著高于机会水平。
+
+1. Adjusted Wald Confidence Interval for Classification Accuracy
+	
+	假设在$N$个独立trial中由$K$个被正确分类，对acc的估计为：
+
+$$
+\hat{acc} = \frac{K+2}{N+4}
+$$
+
+$$
+acc_u = \hat{acc}+z_{1-\alpha/2}\sqrt\frac{\hat{acc}(1-\hat{acc})}{N+4}
+$$
+
+$$
+acc_l = \hat{acc}-z_{1-\alpha/2}\sqrt\frac{\hat{acc}(1-\hat{acc})}{N+4}
+$$
+$z_{1-\alpha/2}$ is the hypothesis test quantity of standard normal distribution.
+
+2. Adjusted Wald Confidence Interval for Cohen’s Kappa
+
+$$
+κ_{l/r} = \frac{acc_{l/u}-acc_0}{1-acc_0}
+$$
+
+The revised null hypothesis is:
+$$
+H_0:κ \leq 0
+$$
+
+$$
+H_1:κ>0
+$$
+
+According to [1-9], it is proposed that κ The [1-15] confidence interval in the original work is too conservative, and the revised interval is:
+
+$$
+κ_l = \hat{κ}-z_{1-\alpha/2}\sqrt\frac{\hat{κ}(1-\hat{κ})}{(N+4)(1-acc_0)}
+$$
+
+$$
+κ_l = \hat{κ}-z_{1-\alpha/2}\sqrt\frac{\hat{κ}(1-\hat{κ})}{(N+4)(1-acc_0)}
+$$
+
+
+[1] Billinger M , Daly I , Kaiser V , et al. Is It Significant? Guidelines for Reporting BCI Performance[M]. Springer Berlin Heidelberg, 2012.
+
+[2] Thomas E , Dyson M , Clerc M . An analysis of performance evaluation for motor-imagery based BCI[J]. Journal of Neural Engineering, 2013, 10(3):031001.

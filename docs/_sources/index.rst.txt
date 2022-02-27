@@ -1,0 +1,61 @@
+.. MetaBCI-VR documentation master file, created by
+   sphinx-quickstart on Mon Feb 21 18:19:14 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to MetaBCI-VR's documentation!
+======================================
+**MetaBCI-VR** is a Python library for offline BCI algorithm development/Benchmarking and for online BCI paradigm design/evaluation.  The github page `MetaBCI-XR <https://github.com/brandonlist/MetaBCI-XR>`_ .
+
+As point out in [???DN3], deeplearning models designed to decode EEG signals need consistency and abstraction that lead to successful reproduction. In a larger 
+sense, machine learning models for BCI will gain better claim of their generalization capabilities using standard training procedures. Also with more real environment, 
+paradigm designers need a better tool to design specific component using predefined evaluation metrics.
+
+To meet these demands we develop this package, which provides:
+
+* For algorithm developers an automated and reliable way to evaluete their designs against multiple state-of-the-art methods, either in a offline way leveraging publicly available datasets, or a simulated online way should the algorithm involves adaptive behaviors.
+
+* For application developers the SDK providing mainstream EEG decoding algorithms implemented in python, as well as communicating interface to 3D engines e.g. Unity3d, so that a BCI with advanced VR/AR user-interface like virtual reality or augmented reality can be easily established with minimum lines of code.  
+
+* For paradigm developers a integrated platform to experiment new paradigms on a set of standardized BCI tasks based on controlled virtual reality environment，so that performance of emerging new methods on a real-life setting can be reasonably compared with SOTA on the same task using identical metrics.
+
++------------------------------+--------------------------+-----------------------------------------+----------------------------------------+
+|       Target developers      |     Paradigm to use      |                   Dataset               |              Unity Interface           | 
++==============================+==========================+=========================================+========================================+
+| offline algorithm developers |     offline Paradigms    |               public Datasets           |                   None                 |
++------------------------------+--------------------------+-----------------------------------------+----------------------------------------+
+| online algorithm developers  |simulated-online or online| public Dataset or self-collected Dataset|               flexible version         |
++------------------------------+--------------------------+-----------------------------------------+----------------------------------------+
+|  BCI application developers  |     online Paradigms     |            self-collected Dataset       |               fixed version            |
++------------------------------+--------------------------+-----------------------------------------+----------------------------------------+
+|     BCI paradigm developers  |simulated-online or online|            self-collected Dataset       |flexible version with fixed task-metrics|
++------------------------------+--------------------------+-----------------------------------------+----------------------------------------+
+
+Fixed version of Unity Interface will set up the online experiment by reading from a file from disk created by python GUI. The file contains the type and timing of predefined stimulations and feedbacks used in the experiment, which are decided by the user via GUI after choosing a Paradigm to use. Unity will then excuted predefined stimulations and feedbacks accordingly.
+
+Flexible version of Unity Interface enables you to decide basically everything that will happen during a trial in synchronous mode, or continuously update your model and the virtual environment at your own pace. At the same time, modules based on TCP/IP and LSL will provide basic synchronous functions between Unity and python module, upon which your own functions can be built.
+
+
+
+.. note::
+
+   This project is under active development.
+.. toctree::
+   :maxdepth: 1
+
+   introduction
+   performance
+   economics
+   parameterSearch
+   compareCSP
+   compareDifferent
+   analyzeFeature
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+

@@ -1,0 +1,19 @@
+A introduction to Paradigms
+
+A brief conclusion is given below:
++--------------------------+------------------------+-----------------+--------------+-------------------------------------------------------------------+
+|    Paradigm to use       |     subject mode       |  train mode     |  evaluation  |                 Target capabilities                               |
++==========================+============================+==============+=============+===================================================================+
+|   NonTargetDataParadigm  |subject_transfer_unlabel| cross validation|              |   generalize over subjects within/across datasets calibration-free |
++--------------------+---+--+-------------+--------------------------------------------------------------------------------------------+
+|   NonTargetDataParadigm  |subject_transfer_unlabel| cross validation|              |     remain high performance over time calibration-free            |          
++--------------------+---+--+-------------+--------------------------------------------------------------------------------------------+
+| SubjectDependentParadigm |   subject_dependent    | cross validation|             |      generalize over subjects within/across datasets once calibrated on target subject     |
++--------------------+---+--+-------------+--------------------------------------------------------------------------------------------+
+| SubjectDependentParadigm |   subject_dependent    |??               |inter-session|     remain high performance over time once calibrated              |
++--------------------+---+--+-------------+--------------------------------------------------------------------------------------------+
+|one-time calibration|Yes|??|inter-subject|boost performance by leveraging other subjects' data and using minimum target subject's data|
++--------------------+---+---+------------+--------------------------------------------------------------------------------------------+
+|adaptive|Yes|??|inter-session|improved time-invariant accuracy by adapting over-time and leveraging other subjects's data|
+
+|adaptive|No|??|inter-session|improved time-invariant accuracy by adapting over-time|
