@@ -85,32 +85,24 @@ At the same time, reporting performance needs to follow certain guidelines:
  
 Online evaluation
 ^^^^^^^^^^^^^^^^^
-模型事先给出
-更能代表模型分类表现
-耗费时间
-一次只能测一个模型
-在线评价使用的数据来源于这样的实验：
-1. 被试能接受实时反馈并调整状态
-2. BCI系统必须实时运行。
 
-在线评价存在一个实时更新的数据流，且通常对于一个被试只能测试一种系统的效能。
-运用在线评价一个模型，检测模型有可能改变被试心理状态，即有关被试内部状态的参量是实时更新的。
+    In online evaluation model should be given in advance. Although it is time-consuming and can only be applied to one model at a time, online methods give a more precise estimation of model's performance.
+
+    Online evaluation should make sure of the following constraints:
+
+1. Subject can receive real-time feedback and adjust their mental states accordingly
+2. BCI system must run in real-time.
 
 Simulated online evaluation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-online为close loop
-不适合用于被试有训练效应
-适用于反应式BCI，如P300
-模拟在线评价使用的数据来源于这样的实验：
 
-1. 被试能接受实时反馈并调整状态 
-2. BCI系统必须实时运行。
-运用模拟在线评价一个模型，检测模型被假设为无法改变被试心理状态。
-模拟在线评价的数据流在实验前已经预先决定。
+Compared to online evaluation which runs in a closed-loop, Simulated online evaluation is not suited on experiments that might have training effects on subjects. Reactive paradigms are more suited to this method.
+
 
 Offline evaluation
 ^^^^^^^^^^^^^^^^^^
-离线评估需要考虑这些因素：
+Offline evaluation should consider the following factors:
+
 1. the statistical significance of the reported results
 2. how well the results translate to online BCI operation (factors:temporal drift,feedback)
 
@@ -138,38 +130,6 @@ trials不随机采样
 同一个session的数据不该出现在train set和test set里
 
 
-# training protocol
-
-1. calibration-free model：完全不进行calibration过程的模型
-	1. train set from same dataset ，channel-specific 			仅用于离线模型比较[直接在线解码]
-	2. train set from multiple datasets，channel-specific 			仅用于离线模型比较
-	3. train set from multiple datasets，channel-friendly 			可用于离线模型比较，也可直接在线解码[直接在线解码]
-	4. train set from same dataset ， channel-friendly			可用于离线模型比较，也可直接在线解码[直接在线解码]
-2. one-time calibration model：仅进行一次calibration过程的模型
-	1. train set from target subject 					仅用于离线模型比较[训练在线解码]
-	2. train set from multiple subjects，same dataset ，channel-specific 		仅用于离线模型比较[训练在线解码]
-	3. train set from multiple subjects，multiple datasets，channel-specific	仅用于离线模型比较
-	4. train set from multiple subjects，multiple datasets，channel-friendly	可用于离线模型比较，也可训练后在线解码[训练在线解码]
-	5. train set from same dataset ， channel-friendly			可用于离线模型比较，也可训练后在线解码[训练在线解码]
-3. adaptive model：进行多次calibration过程的模型
-	1.  train set from target subject					仅用于离线模型比较[自适应在线解码]		
-    2.  train set form multiple subjects，same datasets ，channel-specific 	仅用于离线模型比较[自适应在线解码]
-	3. train set from multiple subjects，multiple datasets，channel-specific	仅用于离线模型比较
-	4. train set from multiple subjects，multiple datasets，channel-friendly	可用于离线模型比较，也可自适应在线解码[自适应在线解码]
-	5. train set from multiple subjects，same datasets，channel-friendly		可用于离线模型比较，也可自适应在线解码[自适应在线解码]
-注：一些标题包含adaptive的方法，由于采用无监督学习，实际上是one-time calibration model。从另一个角度说，自适应参数更新不等于多次calibration
-
-新模型快速比较
-Test set：只使用目标被试的数据
-1. inter-session(same subject)：体现time-invariant
-	1. session-size
-2. inter-subject(same dataset)：体现time-invariant，subject-invariant
-	1. session-size
-	2. subject-size
-3. inter-dataset：体现time-invariant，subject-invariant，task-invariant
-	1. session-size
-	2. subject-size
-	3. dataset-size
 
 Information Transfer Rate
 -------------------------

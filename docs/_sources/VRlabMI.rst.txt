@@ -1,0 +1,104 @@
+2-class MI datasets decoding: an example
+=========================================
+
+First import the packages::
+
+    from Offline.datasets.vrlab_datasets import VRLabcuedMIcalibrateDataset
+    from Paradigm.VRLabCuedMI import VRLabCuedMI
+    from sklearn.svm import SVC
+    from Offline.models.CSP.FBCSP import FBCSP
+    from Offline.trainning.Factory import CSPFactory,CSPInspector,SkorchFactory,SkorchInspector
+    from Offline.trainning.Inspector import InspectorStandard,InspectorSyn
+    from Offline.processing.preprocess import Preprocessor,exponential_moving_standardize
+    from Offline.models.braindecode.shallow_fbcsp import ShallowFBCSPNet
+
+The datasets needed for this experiment is collected in our VR-lab's experiment environment. The key numbers(1-21) are session count of 
+the experiment, each session contains data from one subject in a single session::
+
+    datasets = {
+        1:VRLabcuedMIcalibrateDataset(dataset_id=1, classes=['49', '50']),
+        2:VRLabcuedMIcalibrateDataset(dataset_id=2, classes=['49', '50']),
+        3:VRLabcuedMIcalibrateDataset(dataset_id=3, classes=['49', '50']),
+        4:VRLabcuedMIcalibrateDataset(dataset_id=4, classes=['49', '50']),
+        5:VRLabcuedMIcalibrateDataset(dataset_id=5, classes=['49', '50']),
+        6:VRLabcuedMIcalibrateDataset(dataset_id=6, classes=['49', '50']),
+        7:VRLabcuedMIcalibrateDataset(dataset_id=7, classes=['49', '50']),
+        8:VRLabcuedMIcalibrateDataset(dataset_id=8, classes=['49', '50']),
+        9:VRLabcuedMIcalibrateDataset(dataset_id=9, classes=['49', '50']),
+        10:VRLabcuedMIcalibrateDataset(dataset_id=10, classes=['49', '50']),
+        11:VRLabcuedMIcalibrateDataset(dataset_id=11, classes=['48', '49']),
+        12:VRLabcuedMIcalibrateDataset(dataset_id=12, classes=['48', '49']),
+        13:VRLabcuedMIcalibrateDataset(dataset_id=13, classes=['48', '49']),
+        14:VRLabcuedMIcalibrateDataset(dataset_id=14, classes=['48', '49']),
+        15:VRLabcuedMIcalibrateDataset(dataset_id=15, classes=['48', '49']),
+        16:VRLabcuedMIcalibrateDataset(dataset_id=16, classes=['48', '49']),
+        17:VRLabcuedMIcalibrateDataset(dataset_id=17, classes=['48', '49']),
+        18:VRLabcuedMIcalibrateDataset(dataset_id=18, classes=['48', '49']),
+        20:VRLabcuedMIcalibrateDataset(dataset_id=20, classes=['48', '49']),
+        21:VRLabcuedMIcalibrateDataset(dataset_id=21, classes=['48', '49']),
+    }
+
+Define preprocess pipeline for two different models::
+
+    low_cut_hz = 4.
+    high_cut_hz = 38.
+    factor_new = 1e-3
+    init_block_size = 1000
+    preps = {
+        1:[
+        Preprocessor('resample',sfreq=250),
+        ],
+        2:[Preprocessor('pick',picks='eeg'),
+        Preprocessor(lambda x: x * 1e6),  # Convert from V to uV
+        Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
+        Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
+                        factor_new=factor_new, init_block_size=init_block_size),
+        Preprocessor('resample',sfreq=250)
+        ],
+    }
+
+Define algorithms::
+
+    alg = {
+        1: CSPFactory(Model=FBCSP),
+        2: SkorchFactory(Model=ShallowFBCSPNet,max_epochs=200,lr=6e-7)
+    }
+
+Define inspectors::
+
+    ispt = {
+        1:CSPInspector(inspector=InspectorStandard()),
+        2:SkorchInspector(InspectorSyn(pos_label=None),cuda=True),
+    }
+
+Now define the whole paradigm::
+
+    para = VRLabCuedMI(preprocesser=preps,protocols=None,datasets=datasets,algorithms=alg,inspectors=ispt)
+
+Import models to be trainned::
+
+    fbcsp = FBCSP(sfreq=250,time_steps=1000,window_start=0,window_length=1000,select_ratio=0.8,l_freq=4,h_freq=38,n_cuts=10,clf=SVC(probability=True))
+    cnn = ShallowFBCSPNet(in_chans=56,n_classes=4,input_window_samples=1000,final_conv_length='auto',n_filters_spat=50,n_filters_time=50)
+
+Run a cross validation on each of the subject in the dataset::
+
+    dataset_ids = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21]
+
+    df_csp = para.run_cv_on_datasets(preprocesser_id=1,dataset_ids=dataset_ids,model_name='FBCSP',model=fbcsp,
+                                n_fold=5,trial_start_offset_seconds=0,trial_end_offset_seconds=4,
+                                algorithm_id=1,metrics=['acc','kappa'],inspector_id=1)
+    df_cnn = para.run_cv_on_datasets(preprocesser_id=2,dataset_ids=dataset_ids,model_name='ShallowConvNet',model=cnn,
+                                n_fold=5,trial_start_offset_seconds=0,trial_end_offset_seconds=4,
+                                algorithm_id=2,metrics=['acc','kappa'],inspector_id=1)
+
+Now visualize the results::
+
+    import seaborn as sns
+    df = df_csp.append(df_cnn)
+    sns.boxplot(x='subject',y='acc',hue='model',data=df)
+
+Results are shown below:
+
+.. image:: VRLabMI_f15.png
+
+

@@ -44,12 +44,16 @@ Flexible version of Unity Interface enables you to decide basically everything t
    :maxdepth: 1
 
    introduction
-   performance
-   economics
+   createDataset
+   training
+   analyzeFeature
    parameterSearch
+   littleData
+   NonData
+   performance
    compareCSP
    compareDifferent
-   analyzeFeature
+   VRlabMI
 Indices and tables
 ==================
 

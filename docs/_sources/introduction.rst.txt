@@ -94,3 +94,5 @@ Now at last we define a paradigm like this::
 
 Base Paradigm class: OnlineParadigm
 -------------------------------------
+
+The basic definition of OnlineParadigm is almost the same with OfflineParadigm except for Unity interface, which we will discuss in next session.

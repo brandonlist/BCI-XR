@@ -1,0 +1,201 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Transfer Learning using minimum No Target data &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Perfromance Evaluation" href="performance.html" />
+    <link rel="prev" title="Transfer Learning using minimum Target data" href="littleData.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="performance.html" title="Perfromance Evaluation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="littleData.html" title="Transfer Learning using minimum Target data"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Transfer Learning using minimum No Target data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="transfer-learning-using-minimum-no-target-data">
+<h1>Transfer Learning using minimum No Target data<a class="headerlink" href="#transfer-learning-using-minimum-no-target-data" title="Permalink to this headline">¶</a></h1>
+<section id="example-using-baseline-model">
+<h2>example using baseline model<a class="headerlink" href="#example-using-baseline-model" title="Permalink to this headline">¶</a></h2>
+<p>First import the necessary packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.datasets.moabb</span> <span class="kn">import</span> <span class="n">MOABBDataset</span><span class="p">,</span><span class="n">moabb_dataset_list</span>
+<span class="kn">from</span> <span class="nn">Offline.profile.manifest</span> <span class="kn">import</span> <span class="n">BugZero</span>
+<span class="kn">from</span> <span class="nn">Offline.processing.preprocess</span> <span class="kn">import</span> <span class="n">Preprocessor</span><span class="p">,</span><span class="n">exponential_moving_standardize</span>
+<span class="kn">from</span> <span class="nn">Paradigm.base</span> <span class="kn">import</span> <span class="n">NonTargetDataParadigm</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">SkorchFactory</span><span class="p">,</span><span class="n">CSPFactory</span>
+<span class="n">BugZero</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.FBCSP</span> <span class="kn">import</span> <span class="n">FBCSP</span>
+</pre></div>
+</div>
+<p>Now load the example dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">MOABBDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s1">&#39;BNCI2014001&#39;</span><span class="p">,</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define the preprocess pipelines for two baseline model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">low_cut_hz</span> <span class="o">=</span> <span class="mf">4.</span>
+<span class="n">high_cut_hz</span> <span class="o">=</span> <span class="mf">38.</span>
+<span class="n">factor_new</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">init_block_size</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">preps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:[</span><span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;pick&#39;</span><span class="p">,</span><span class="n">picks</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">),</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">),</span>  <span class="c1"># Convert from V to uV</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">),</span>  <span class="c1"># Bandpass filter</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="n">exponential_moving_standardize</span><span class="p">,</span>  <span class="c1"># Exponential moving standardization</span>
+                    <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">),</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="mi">2</span><span class="p">:[</span><span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;pick&#39;</span><span class="p">,</span><span class="n">picks</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">)]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define the trainning algorithm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.models.braindecode.shallow_fbcsp</span> <span class="kn">import</span> <span class="n">ShallowFBCSPNet</span>
+<span class="n">alg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">SkorchFactory</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">ShallowFBCSPNet</span><span class="p">,</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">250</span><span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="n">CSPFactory</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">FBCSP</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define the inspector algorithms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">SkorchInspector</span><span class="p">,</span><span class="n">CSPInspector</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Inspector</span> <span class="kn">import</span> <span class="n">InspectorSyn</span>
+
+
+<span class="n">ispt</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="n">SkorchInspector</span><span class="p">(</span><span class="n">InspectorSyn</span><span class="p">(</span><span class="n">pos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span><span class="n">cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span><span class="n">CSPInspector</span><span class="p">(</span><span class="n">InspectorSyn</span><span class="p">(</span><span class="n">pos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now define the paradigm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span> <span class="o">=</span> <span class="n">NonTargetDataParadigm</span><span class="p">(</span><span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span><span class="n">protocols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">algorithms</span><span class="o">=</span><span class="n">alg</span><span class="p">,</span><span class="n">control_signal_mode</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preps</span>
+                            <span class="p">,</span><span class="n">inspectors</span><span class="o">=</span><span class="n">ispt</span><span class="p">,</span><span class="n">subject_list</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span><span class="n">n_subjects</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>train models using NonTargetDataParadigm, run a cross validation on whole datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cnn</span> <span class="o">=</span> <span class="n">ShallowFBCSPNet</span><span class="p">(</span><span class="n">in_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span><span class="n">n_classes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">input_window_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">final_conv_length</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span><span class="n">n_filters_spat</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">n_filters_time</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">fbcsp</span> <span class="o">=</span> <span class="n">FBCSP</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">select_ratio</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">h_freq</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span><span class="n">n_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+<span class="n">ans_cnn</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dataset_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="n">cnn</span><span class="p">,</span>
+                                <span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;ShallowConvNet&#39;</span><span class="p">,</span>
+                                <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">],</span><span class="n">n_fold</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">ans_csp</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">run_cv_on_dataset</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">dataset_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inspector_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="n">fbcsp</span><span class="p">,</span>
+                                <span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;FBCSP&#39;</span><span class="p">,</span>
+                                <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="s1">&#39;kappa&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;subject&#39;</span><span class="p">],</span><span class="n">n_fold</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>visualize the results of the baseline model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">re_subjects_cnn</span><span class="p">,</span> <span class="n">trainned_modes_cnn</span><span class="p">,</span> <span class="n">df_subjects_cnn</span> <span class="o">=</span> <span class="n">ans_cnn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ans_cnn</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ans_cnn</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">re_subjects_csp</span><span class="p">,</span> <span class="n">trainned_modes_csp</span><span class="p">,</span> <span class="n">df_subjects_csp</span> <span class="o">=</span> <span class="n">ans_csp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ans_csp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ans_csp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df_subjects_csp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_subjects_cnn</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;acc&#39;</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/Nontarget_f14.png" src="_images/Nontarget_f14.png" />
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Transfer Learning using minimum No Target data</a><ul>
+<li><a class="reference internal" href="#example-using-baseline-model">example using baseline model</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="littleData.html"
+                        title="previous chapter">Transfer Learning using minimum Target data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="performance.html"
+                        title="next chapter">Perfromance Evaluation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/NonData.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="performance.html" title="Perfromance Evaluation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="littleData.html" title="Transfer Learning using minimum Target data"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Transfer Learning using minimum No Target data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>

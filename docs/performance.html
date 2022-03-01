@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
     <title>Perfromance Evaluation &#8212; MetaBCI-VR 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -19,8 +19,8 @@
     <script src="_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Calibration Economics" href="economics.html" />
-    <link rel="prev" title="Welcome to MetaBCI-VR’s documentation!" href="index.html" />
+    <link rel="next" title="Comparing different CSP models" href="compareCSP.html" />
+    <link rel="prev" title="Transfer Learning using minimum No Target data" href="NonData.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <!--[if lt IE 9]>
     <script src="_static/css3-mediaqueries.js"></script>
@@ -33,10 +33,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="economics.html" title="Calibration Economics"
+          <a href="compareCSP.html" title="Comparing different CSP models"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to MetaBCI-VR’s documentation!"
+          <a href="NonData.html" title="Transfer Learning using minimum No Target data"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
@@ -135,34 +135,26 @@ One idea is that it must meet the minimum requirements of such equipment. For ex
 </div></blockquote>
 <section id="online-evaluation">
 <h3>Online evaluation<a class="headerlink" href="#online-evaluation" title="Permalink to this headline">¶</a></h3>
-<p>模型事先给出
-更能代表模型分类表现
-耗费时间
-一次只能测一个模型
-在线评价使用的数据来源于这样的实验：
-1. 被试能接受实时反馈并调整状态
-2. BCI系统必须实时运行。</p>
-<p>在线评价存在一个实时更新的数据流，且通常对于一个被试只能测试一种系统的效能。
-运用在线评价一个模型，检测模型有可能改变被试心理状态，即有关被试内部状态的参量是实时更新的。</p>
+<blockquote>
+<div><p>In online evaluation model should be given in advance. Although it is time-consuming and can only be applied to one model at a time, online methods give a more precise estimation of model’s performance.</p>
+<p>Online evaluation should make sure of the following constraints:</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Subject can receive real-time feedback and adjust their mental states accordingly</p></li>
+<li><p>BCI system must run in real-time.</p></li>
+</ol>
 </section>
 <section id="simulated-online-evaluation">
 <h3>Simulated online evaluation<a class="headerlink" href="#simulated-online-evaluation" title="Permalink to this headline">¶</a></h3>
-<p>online为close loop
-不适合用于被试有训练效应
-适用于反应式BCI，如P300
-模拟在线评价使用的数据来源于这样的实验：</p>
-<ol class="arabic simple">
-<li><p>被试能接受实时反馈并调整状态</p></li>
-</ol>
-<p>2. BCI系统必须实时运行。
-运用模拟在线评价一个模型，检测模型被假设为无法改变被试心理状态。
-模拟在线评价的数据流在实验前已经预先决定。</p>
+<p>Compared to online evaluation which runs in a closed-loop, Simulated online evaluation is not suited on experiments that might have training effects on subjects. Reactive paradigms are more suited to this method.</p>
 </section>
 <section id="offline-evaluation">
 <h3>Offline evaluation<a class="headerlink" href="#offline-evaluation" title="Permalink to this headline">¶</a></h3>
-<p>离线评估需要考虑这些因素：
-1. the statistical significance of the reported results
-2. how well the results translate to online BCI operation (factors:temporal drift,feedback)</p>
+<p>Offline evaluation should consider the following factors:</p>
+<ol class="arabic simple">
+<li><p>the statistical significance of the reported results</p></li>
+<li><p>how well the results translate to online BCI operation (factors:temporal drift,feedback)</p></li>
+</ol>
 </section>
 <section id="offline-hold-out">
 <h3>Offline hold-out<a class="headerlink" href="#offline-hold-out" title="Permalink to this headline">¶</a></h3>
@@ -184,73 +176,6 @@ trials不随机采样
 训练数据少的话用nested cross-validation
 尽量用多个session的数据
 同一个session的数据不该出现在train set和test set里</p>
-<p># training protocol</p>
-<ol class="arabic">
-<li><dl class="simple">
-<dt>calibration-free model：完全不进行calibration过程的模型</dt><dd><ol class="arabic simple">
-<li><p>train set from same dataset ，channel-specific                        仅用于离线模型比较[直接在线解码]</p></li>
-<li><p>train set from multiple datasets，channel-specific                    仅用于离线模型比较</p></li>
-<li><p>train set from multiple datasets，channel-friendly                    可用于离线模型比较，也可直接在线解码[直接在线解码]</p></li>
-<li><p>train set from same dataset ， channel-friendly                       可用于离线模型比较，也可直接在线解码[直接在线解码]</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>one-time calibration model：仅进行一次calibration过程的模型</dt><dd><ol class="arabic simple">
-<li><p>train set from target subject                                        仅用于离线模型比较[训练在线解码]</p></li>
-<li><p>train set from multiple subjects，same dataset ，channel-specific              仅用于离线模型比较[训练在线解码]</p></li>
-<li><p>train set from multiple subjects，multiple datasets，channel-specific  仅用于离线模型比较</p></li>
-<li><p>train set from multiple subjects，multiple datasets，channel-friendly  可用于离线模型比较，也可训练后在线解码[训练在线解码]</p></li>
-<li><p>train set from same dataset ， channel-friendly                       可用于离线模型比较，也可训练后在线解码[训练在线解码]</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>adaptive model：进行多次calibration过程的模型</dt><dd><blockquote>
-<div><ol class="arabic simple">
-<li><p>train set from target subject                                       仅用于离线模型比较[自适应在线解码]</p></li>
-</ol>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li><p>train set form multiple subjects，same datasets ，channel-specific        仅用于离线模型比较[自适应在线解码]
-3. train set from multiple subjects，multiple datasets，channel-specific  仅用于离线模型比较
-4. train set from multiple subjects，multiple datasets，channel-friendly  可用于离线模型比较，也可自适应在线解码[自适应在线解码]
-5. train set from multiple subjects，same datasets，channel-friendly              可用于离线模型比较，也可自适应在线解码[自适应在线解码]</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-</ol>
-<p>注：一些标题包含adaptive的方法，由于采用无监督学习，实际上是one-time calibration model。从另一个角度说，自适应参数更新不等于多次calibration</p>
-<p>新模型快速比较
-Test set：只使用目标被试的数据
-1. inter-session(same subject)：体现time-invariant</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>session-size</p></li>
-</ol>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li><dl class="simple">
-<dt>inter-subject(same dataset)：体现time-invariant，subject-invariant</dt><dd><ol class="arabic simple">
-<li><p>session-size</p></li>
-<li><p>subject-size</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>inter-dataset：体现time-invariant，subject-invariant，task-invariant</dt><dd><ol class="arabic simple">
-<li><p>session-size</p></li>
-<li><p>subject-size</p></li>
-<li><p>dataset-size</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-</ol>
 </section>
 </section>
 <section id="information-transfer-rate">
@@ -337,9 +262,8 @@ $$</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Perfromance Evaluation</a><ul>
 <li><a class="reference internal" href="#feedback-evaluation">Feedback evaluation</a></li>
 <li><a class="reference internal" href="#assistive-technology-evaluation">Assistive technology evaluation</a></li>
@@ -365,17 +289,12 @@ $$</p>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="index.html"
-                          title="previous chapter">Welcome to MetaBCI-VR’s documentation!</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="economics.html"
-                          title="next chapter">Calibration Economics</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="NonData.html"
+                        title="previous chapter">Transfer Learning using minimum No Target data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="compareCSP.html"
+                        title="next chapter">Comparing different CSP models</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -387,7 +306,7 @@ $$</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -404,10 +323,10 @@ $$</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="economics.html" title="Calibration Economics"
+          <a href="compareCSP.html" title="Comparing different CSP models"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to MetaBCI-VR’s documentation!"
+          <a href="NonData.html" title="Transfer Learning using minimum No Target data"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
@@ -415,7 +334,7 @@ $$</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Haochen Hu.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
     </div>
   </body>
 </html>

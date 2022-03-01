@@ -1,0 +1,71 @@
+Model Training for OfflineParadigm and Online Paradigm
+=======================================================
+
+subject mode: Subject dependent
+--------------------------------
+
+In this mode training data and test data come from one subject only.
+
+train mode: Hold-out
+^^^^^^^^^^^^^^^^^^^^^
+
+
+Estimating calibration trial number
+------------------------------------
+
+To guarantee high ITR communication of BCI system in test phase, a calibration process which contains no information output is required. 
+The overall purpose is to acquire a high-accuracy & long-lasting BCI decoding model using most minimal calibration data possible, 
+and the problem being: how to estimate trial number required by a certain expected accuracy over a predetermined period. We further decompose
+ this issue into two domain: the evaluation domain and the calibration domain.
+
+
+Evaluation domain: generalization ability
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+EEG signal possess mainly three variant aspect: time-wise, subject-wise and task/environment-wise. Therefore, decoding models are required to have 
+corresponding generalization abilitie: time-invariant generalization, subject-invariant generalization and task/environment-invariant generalization.
+
+Requirements for generalization ability are scenario-dependent. A simple demonstration will be shown below:
+
++-----------------------------------------+--------------+---------------+-----------------+
+|                application              |task-invariant|time-invariant |subject-invariant|
++=========================================+==============+===============+=================+
+|   BCI cursor designed for SCI patients  |       No     |      Yes      |       No        |
++-----------------------------------------+--------------+---------------+-----------------+
+|     BCI cursor for new Facebook HMD     |       No     |      Yes      |      Yes        |
++-----------------------------------------+--------------+---------------+-----------------+ 
+|   BCI wheel chair for SCI patients      |      Yes     |      Yes      |       No        |
++-----------------------------------------+--------------+---------------+-----------------+ 
+|     Exprience device on BCI-Expo        |       No     |       No      |      Yes        |
++-----------------------------------------+--------------+---------------+-----------------+
+
+Simple classification metrics (accuracy, precision, roc) are not informative enough to evaluate 3-fold generalization abilities. A more precise evaluation
+ technique is required.
+
+
+Calibration domain: Cost of calibration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Apart from generalization power, we hope to commit minimum calibration effort. Achieving optimal accuracy by
+calibrating repeatedly is not favorable. The need for reducing calibration cost is also scenario-dependent:
+
++-------------------------------------------+------------------------------------------------------+
+|    BCI cursor designed for SCI patients   |   No significant benefit in reducing calibration cost|
++-------------------------------------------+------------------------------------------------------+
+|      BCI cursor for new Facebook HMD      |         Minimal calibration cost is prefered         |
++-------------------------------------------+------------------------------------------------------+
+|    BCI wheel chair for SCI patients       |   Minimal calibration is prefered for safety reasons |
++-------------------------------------------+------------------------------------------------------+
+|      Exprience device on BCI-Expo         |         Minimal calibration cost is prefered         |
++-------------------------------------------+------------------------------------------------------+
+
+
+Combined perspective: minimum cost, maximum ability
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To sum up, a generalization ability-calibration cost ratio is required to precisely evaluate the calibration aspect of a BCI model. 
+We design the CalibEval paradigm to meet this purpose. In detail, this paradigm have following features to achieve optimized selection 
+of training and evaluation of BCI model:
+
+see also:
+evaluate model's preference for invariantion type
+evaluate model's capacity by alternating training procedure
