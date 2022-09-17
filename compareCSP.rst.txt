@@ -1,0 +1,120 @@
+Comparing different CSP models
+==============================
+
+Import necessary modules::
+
+    from Offline.datasets.moabb import MOABBDataset,moabb_dataset_list
+    from Offline.profile.manifest import BugZero
+    from Offline.processing.preprocess import Preprocessor
+    from Paradigm.base import SubjectDependentParadigm
+    from Offline.trainning.Factory import CSPFactory
+
+load datasets::
+
+    dataset_name = moabb_dataset_list[1][0]
+    n_subject = 9
+    datasets = {}
+
+    for i in range(n_subject):
+        datasets[i+1] = MOABBDataset(dataset_name=dataset_name,subject_ids=[i+1])
+
+
+Define preprocess pipeline::
+
+    preps = {
+        1:[Preprocessor('pick',picks='eeg')]
+    }
+
+Define different CSP structures to compare::
+
+    from sklearn.svm import SVC
+    from Offline.models.CSP.base import CSPBase
+    from Offline.models.CSP.CSSP import CSSPBase
+    from Offline.models.CSP.FBCSP import FBCSP
+    from Offline.models.CSP.SBCSP import SBCSP
+
+    cspbase = CSPBase(sfreq=250,time_steps=1000,window_start=0,window_length=1000,csp_kwargs={'n_components':4},clf=SVC(probability=True))
+    csspbase = CSSPBase(sfreq=250,time_steps=1000,window_start=0,window_length=1000,csp_kwargs={'n_components':4},clf=SVC(probability=True),T=10)
+    fbcsp = FBCSP(sfreq=250,time_steps=1000,window_start=0,window_length=1000,select_ratio=0.6,l_freq=4,h_freq=38,n_cuts=10,clf=SVC(probability=True))
+    sbcsp = SBCSP(sfreq=250,time_steps=1000,window_start=0,window_length=1000,l_freq=4,h_freq=38,n_cuts=10,clf=SVC(kernel='linear',probability=True))
+
+Define algorithms to train and inspect CSP model::
+
+    from Offline.trainning.Factory import CSPInspector
+    from Offline.trainning.Inspector import InspectorSyn
+    alg = {
+        1: CSPFactory(Model=FBCSP),
+    }
+    ispt = {
+        1:CSPInspector(InspectorSyn(pos_label=None))
+    }
+
+Define paradigm::
+
+    para = SubjectDependentParadigm(datasets=datasets,protocols=None,algorithms=alg,control_signal_mode='active',preprocess=preps,inspectors=ispt)
+
+Run subject dependent decoding on every subject in the dataset::
+
+    re_subjects, trainned_model_subjects, df_subjects = para.run_cv_on_dataset(preprocesser_id=1,algorithm_id=1,inspector_id=1,n_fold=5,
+                                                                            model=fbcsp,trial_start_offset_seconds=0,trial_end_offset_seconds=0,
+                                                                    model_name='FBCSP',metrics=['acc','kappa','model','subject'])
+
+    re_subjects_1, trainned_model_subjects_1, df_subjects_1 = para.run_cv_on_dataset(preprocesser_id=1,algorithm_id=1,inspector_id=1,n_fold=5,
+                                                                            model=sbcsp,trial_start_offset_seconds=0,trial_end_offset_seconds=0,
+                                                                    model_name='SBCSP',metrics=['acc','kappa','model','subject'])
+
+    re_subjects_2, trainned_model_subjects_2, df_subjects_2 = para.run_cv_on_dataset(preprocesser_id=1,algorithm_id=1,inspector_id=1,n_fold=5,
+                                                                            model=cspbase,trial_start_offset_seconds=0,trial_end_offset_seconds=0,
+                                                                    model_name='CSPbase',metrics=['acc','kappa','model','subject'])
+
+    re_subjects_3, trainned_model_subjects_3, df_subjects_3 = para.run_cv_on_dataset(preprocesser_id=1,algorithm_id=1,inspector_id=1,n_fold=5,
+                                                                            model=csspbase,trial_start_offset_seconds=0,trial_end_offset_seconds=0,
+                                                                    model_name='CSSP',metrics=['acc','kappa','model','subject'])
+
+to see the results after write them to disk::
+
+    para.log(df=df_subjects,dataset_name=dataset_name)
+    para.log(df=df_subjects_1,dataset_name=dataset_name)
+    para.log(df=df_subjects_2,dataset_name=dataset_name)
+    para.log(df=df_subjects_3,dataset_name=dataset_name)
+
+You can resume the results from disk and display the results::
+
+    para.read_df_from_file(${your file name})
+
+Now we visualize the results of model FBCSP, SBCSP, CSP and CSSP using boxplot::
+
+    import seaborn as sns
+    sns.boxplot(x='subject',y='acc',data=df_subjects)       #FBCSP
+    sns.boxplot(x='subject',y='acc',data=df_subjects_1)     #SBCSP
+    sns.boxplot(x='subject',y='acc',data=df_subjects_2)     #CSP
+    sns.boxplot(x='subject',y='acc',data=df_subjects_3)     #CSSP
+
+results are shown below:
+
+    .. image:: compareCSP_f12.png
+
+accuary of FBCSP on dataset
+
+    .. image:: compareCSP_f13.png
+
+accuary of SBCSP on dataset
+
+    .. image:: compareCSP_f14.png
+
+accuary of CSP on dataset
+
+    .. image:: compareCSP_f15.png
+
+accuary of CSSP on dataset
+
+Now concatenate all models' results and visualize them::
+
+    df = pd.concat([df_subjects,df_subjects_1,df_subjects_2,df_subjects_3])
+    sns.boxplot(x='subject',y='acc',hue='model',data=df)
+
+results are shown below:
+
+.. image:: compareCSP_f16.png
+
+example code download:

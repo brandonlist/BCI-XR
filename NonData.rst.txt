@@ -1,0 +1,88 @@
+Transfer Learning using Zero Target data
+===============================================
+
+example using baseline model
+------------------------------
+
+First import the necessary packages::
+
+    from Offline.datasets.moabb import MOABBDataset,moabb_dataset_list
+    from Offline.profile.manifest import BugZero
+    from Offline.processing.preprocess import Preprocessor,exponential_moving_standardize
+    from Paradigm.base import NonTargetDataParadigm
+    from Offline.trainning.Factory import SkorchFactory,CSPFactory
+    from sklearn.svm import SVC
+    from Offline.models.CSP.FBCSP import FBCSP
+
+
+Now load the example dataset::
+
+    datasets = {
+        1: MOABBDataset(dataset_name='BNCI2014001',subject_ids=[1,2,3,4,5,6,7,8,9])
+    }
+
+define the preprocess pipelines for two baseline model::
+
+    low_cut_hz = 4.
+    high_cut_hz = 38.
+    factor_new = 1e-3
+    init_block_size = 1000
+    preps = {
+        1:[Preprocessor('pick',picks='eeg'),
+        Preprocessor(lambda x: x * 1e6),  # Convert from V to uV
+        Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
+        Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
+                        factor_new=factor_new, init_block_size=init_block_size),
+        Preprocessor('resample',sfreq=50)
+        ],
+        2:[Preprocessor('pick',picks='eeg')]
+    }
+
+define the trainning algorithm::
+
+    from Offline.models.braindecode.shallow_fbcsp import ShallowFBCSPNet
+    alg = {
+        1: SkorchFactory(Model=ShallowFBCSPNet,max_epochs=250),
+        2: CSPFactory(Model=FBCSP),
+    }
+
+define the inspector algorithms::
+
+    from Offline.trainning.Factory import SkorchInspector,CSPInspector
+    from Offline.trainning.Inspector import InspectorSyn
+
+
+    ispt = {
+        1:SkorchInspector(InspectorSyn(pos_label=None),cuda=True),
+        2:CSPInspector(InspectorSyn(pos_label=None))
+    }
+
+Now define the paradigm::
+
+    para = NonTargetDataParadigm(datasets=datasets,protocols=None,algorithms=alg,control_signal_mode='active',preprocess=preps
+                                ,inspectors=ispt,subject_list=[1,2,3,4,5,6,7,8,9],n_subjects=9)
+
+train models using NonTargetDataParadigm, run a cross validation on whole datasets::
+
+    cnn = ShallowFBCSPNet(in_chans=22,n_classes=4,input_window_samples=200,final_conv_length='auto',n_filters_spat=50,n_filters_time=50)
+    fbcsp = FBCSP(sfreq=250,time_steps=1000,window_start=0,window_length=1000,select_ratio=0.6,l_freq=4,h_freq=38,n_cuts=10,clf=SVC(probability=True))
+
+    ans_cnn = para.run_cv_on_dataset(preprocesser_id=1,algorithm_id=1,dataset_id=1,inspector_id=1,model=cnn,
+                                    trial_start_offset_seconds=0,trial_end_offset_seconds=0,model_name='ShallowConvNet',
+                                    metrics=['acc','kappa','model','subject'],n_fold=None)
+
+    ans_csp = para.run_cv_on_dataset(preprocesser_id=2,algorithm_id=2,dataset_id=1,inspector_id=2,model=fbcsp,
+                                    trial_start_offset_seconds=0,trial_end_offset_seconds=0,model_name='FBCSP',
+                                    metrics=['acc','kappa','model','subject'],n_fold=None)
+
+visualize the results of the baseline model::
+
+    re_subjects_cnn, trainned_modes_cnn, df_subjects_cnn = ans_cnn[0],ans_cnn[1],ans_cnn[2]
+    re_subjects_csp, trainned_modes_csp, df_subjects_csp = ans_csp[0],ans_csp[1],ans_csp[2]
+
+    df = df_subjects_csp.append(df_subjects_cnn)
+    sns.boxplot(x='subject',y='acc',hue='model',data=df)
+
+results are shown below:
+
+.. image:: Nontarget_f14.png

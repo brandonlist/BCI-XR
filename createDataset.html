@@ -1,0 +1,303 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Datasets in MetaBCI-XR &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2-class MI datasets decoding: an example" href="VRlabMI.html" />
+    <link rel="prev" title="Compare different models on same datasets" href="compareDifferent.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="VRlabMI.html" title="2-class MI datasets decoding: an example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="compareDifferent.html" title="Compare different models on same datasets"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Datasets in MetaBCI-XR</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="datasets-in-metabci-xr">
+<h1>Datasets in MetaBCI-XR<a class="headerlink" href="#datasets-in-metabci-xr" title="Permalink to this headline">¶</a></h1>
+<p>Dataset class are sub-class of braindecode.BaseConcatDataset, with some alternation. Normally it have a datasets attribute,
+a list of BaseDataset. The <strong>raw</strong> attribute of the BaseDataset are mne.io.Raw object, consisting continuous EEG-data of
+the recording sessions.</p>
+<p>There are also the shared data structure description, a dict object containing information of every raw object, i.e. subject_id,
+session_id and run_id.</p>
+<section id="load-built-in-publicly-available-datasets">
+<h2>Load built-in publicly-available datasets<a class="headerlink" href="#load-built-in-publicly-available-datasets" title="Permalink to this headline">¶</a></h2>
+<p>There are for now 24 publicly available datasets, 20 from MOABB and 4 from BCI-competition. A brief introduction is given below. For more information please refer to  <a class="reference external" href="https://github.com/NeuroTechX/moabb">MOABB datasets</a>, <a class="reference external" href="https://www.bbci.de/competition/">BCICompetition datasets</a>
+for more information.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 9%" />
+<col style="width: 12%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>dataset name</p></th>
+<th class="head"><p>paradigm</p></th>
+<th class="head"><p>subjects</p></th>
+<th class="head"><p>sfreq</p></th>
+<th class="head"><p>channels</p></th>
+<th class="head"><p>trials/subject</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>moabb.datasets.AlexMI</p></td>
+<td><p>MI</p></td>
+<td><p>8</p></td>
+<td><p>512Hz</p></td>
+<td><p>16</p></td>
+<td><p>60</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.BNCI2014001</p></td>
+<td><p>MI</p></td>
+<td><p>9</p></td>
+<td><p>250Hz</p></td>
+<td><p>22</p></td>
+<td><p>576</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.BNCI2014002</p></td>
+<td><p>MI</p></td>
+<td><p>13</p></td>
+<td><p>512Hz</p></td>
+<td><p>15</p></td>
+<td><p>160</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.BNCI2014004</p></td>
+<td><p>MI</p></td>
+<td><p>9</p></td>
+<td><p>250Hz</p></td>
+<td><p>3</p></td>
+<td><p>560</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.BNCI2015001</p></td>
+<td><p>MI</p></td>
+<td><p>12</p></td>
+<td><p>512Hz</p></td>
+<td><p>13</p></td>
+<td><p>400</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.BNCI2015004</p></td>
+<td><p>MI</p></td>
+<td><p>9</p></td>
+<td><p>256Hz</p></td>
+<td><p>30</p></td>
+<td><p>400</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.Cho2017</p></td>
+<td><p>MI</p></td>
+<td><p>52</p></td>
+<td><p>512Hz</p></td>
+<td><p>64</p></td>
+<td><p>200</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.Shin2017A</p></td>
+<td><p>MI</p></td>
+<td><p>29</p></td>
+<td><p>1000Hz</p></td>
+<td><p>30</p></td>
+<td><p>60</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.Shin2017B</p></td>
+<td><p>MI</p></td>
+<td><p>29</p></td>
+<td><p>1000Hz</p></td>
+<td><p>30</p></td>
+<td><p>60</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.Weibo2014</p></td>
+<td><p>MI</p></td>
+<td><p>10</p></td>
+<td><p>N/A</p></td>
+<td><p>60</p></td>
+<td><p>560</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.SSVEPExo</p></td>
+<td><p>SSVEP</p></td>
+<td><p>12</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+<td><p>64</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.Nakanishi2015</p></td>
+<td><p>SSVEP</p></td>
+<td><p>9</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+<td><p>180</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.Wang2016</p></td>
+<td><p>SSVEP</p></td>
+<td><p>34</p></td>
+<td><p>250Hz</p></td>
+<td><p>64</p></td>
+<td><p>240</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.MAMEM1</p></td>
+<td><p>SSVEP</p></td>
+<td><p>10</p></td>
+<td><p>250Hz</p></td>
+<td><p>256</p></td>
+<td><p>66</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.MAMEM2</p></td>
+<td><p>SSVEP</p></td>
+<td><p>10</p></td>
+<td><p>250Hz</p></td>
+<td><p>256</p></td>
+<td><p>125</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.MAMEM3</p></td>
+<td><p>SSVEP</p></td>
+<td><p>10</p></td>
+<td><p>128Hz</p></td>
+<td><p>14</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.bi2013a</p></td>
+<td><p>P300</p></td>
+<td><p>24</p></td>
+<td><p>512Hz</p></td>
+<td><p>16</p></td>
+<td><p>3840</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.BNCI2014008</p></td>
+<td><p>P300</p></td>
+<td><p>8</p></td>
+<td><p>256Hz</p></td>
+<td><p>8</p></td>
+<td><p>4200</p></td>
+</tr>
+<tr class="row-even"><td><p>moabb.datasets.BNCI2014009</p></td>
+<td><p>P300</p></td>
+<td><p>10</p></td>
+<td><p>N/A</p></td>
+<td><p>16</p></td>
+<td><p>1728</p></td>
+</tr>
+<tr class="row-odd"><td><p>moabb.datasets.BNCI2015003</p></td>
+<td><p>P300</p></td>
+<td><p>10</p></td>
+<td><p>256Hz</p></td>
+<td><p>8</p></td>
+<td><p>5400</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="create-dataset-using-your-own-data">
+<h2>Create dataset using your own data<a class="headerlink" href="#create-dataset-using-your-own-data" title="Permalink to this headline">¶</a></h2>
+<p>To pack your own data, deifine Offline.dataset.CustumDataset class. mne.io.Raw object is required containing following information:</p>
+<ol class="arabic simple">
+<li><p>annotations of trials.</p></li>
+<li><p>EEG channel names following standard 10-05 montage.</p></li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Datasets in MetaBCI-XR</a><ul>
+<li><a class="reference internal" href="#load-built-in-publicly-available-datasets">Load built-in publicly-available datasets</a></li>
+<li><a class="reference internal" href="#create-dataset-using-your-own-data">Create dataset using your own data</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="compareDifferent.html"
+                          title="previous chapter">Compare different models on same datasets</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="VRlabMI.html"
+                          title="next chapter">2-class MI datasets decoding: an example</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/createDataset.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="VRlabMI.html" title="2-class MI datasets decoding: an example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="compareDifferent.html" title="Compare different models on same datasets"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Datasets in MetaBCI-XR</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

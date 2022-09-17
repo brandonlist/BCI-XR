@@ -1,0 +1,263 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Perfromance Evaluation &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Comparing different CSP models" href="compareCSP.html" />
+    <link rel="prev" title="Hyper-parameter Search of DL-BCI model" href="parameterSearch.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="compareCSP.html" title="Comparing different CSP models"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Hyper-parameter Search of DL-BCI model"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="perfromance-evaluation">
+<h1>Perfromance Evaluation<a class="headerlink" href="#perfromance-evaluation" title="Permalink to this headline">¶</a></h1>
+<p>Here’s a brief recap of what’s happening in a general brain-computer interface pipeline: Firstly a transducer receives user’s brain signal and produces control signal using complex decoding algorithms. A control interface receiving the signal integrated information from environment as well as the subject’s response signal of the last time period to produce a overall feedback to the user, so as to:</p>
+<ol class="arabic simple">
+<li><p>Inform the user on how his intention is interpreted from his brain activity</p></li>
+<li><p>Elicit reinforcement signal</p></li>
+<li><p>To motive user by displaying only the positive feedback, as employed by many works.</p></li>
+</ol>
+<img alt="_images/bci.png" src="_images/bci.png" />
+<section id="feedback-evaluation">
+<h2>Feedback evaluation<a class="headerlink" href="#feedback-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>Ways to provide BCI feedback includes visual information presentation on screen auditory, AR or VR displays. It can only be evaluated by online experiments.
+ANOVA tests can be used to investigate the significance of the difference, and a questionnaire to evaluate the subjects’ quality of life and motivation.</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>multi-group comparison</dt><dd><p>The problem of BCI-illiteracy must be solved, and the average performance should be controlled to be the same.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>single-group multi-session comparison</dt><dd><p>The training effect must be considered. One method is to compare after training to a stable level</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="assistive-technology-evaluation">
+<h2>Assistive technology evaluation<a class="headerlink" href="#assistive-technology-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>The auxiliary equipment connected with BCI system includes automatic wheelchair, artificial limb and communication equipment. These devices usually adopt the self paced setting, and we cannot accurately know the “true intention signal” of the subjects (such as using the sampling rate of 1Hz), so it is difficult to compare the performance differences between BCI auxiliary systems with simple standards.
+One idea is that it must meet the minimum requirements of such equipment. For example, the fault tolerance rate of automatic wheelchair is very low, but there are not so strict requirements for typewriter. Please see [??evaluation baseline of assistive technology]</p>
+<p>Another idea is to specify a consent competition for BCI of the same type of task and set the same evaluation criteria. Tasks that may be involved include virtual navigation, virtual cursor movement, etc. Please see [??BCI Competition in virtual reality].</p>
+</section>
+<section id="control-interface-evaluation">
+<h2>Control Interface evaluation<a class="headerlink" href="#control-interface-evaluation" title="Permalink to this headline">¶</a></h2>
+<section id="reinforcement-information">
+<h3>reinforcement information<a class="headerlink" href="#reinforcement-information" title="Permalink to this headline">¶</a></h3>
+<p>shared control means decisions are made based on combination of transducer output and reinforcement signal. Papers evaluate this part by using ITR increase[2-34,2-35], accuracy imporvement of whole system[2-37].</p>
+<ol class="arabic simple">
+<li><p>single group online</p></li>
+<li><dl class="simple">
+<dt>simulated online</dt><dd><p>It can only be said to be an estimate of the best improvement efficiency.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="errp-detector">
+<h3>ErrP detector<a class="headerlink" href="#errp-detector" title="Permalink to this headline">¶</a></h3>
+<p>Papers evaluate ErrP detector using accuracy of correct trial or error trial[2-34,2-35,2-36], TP and FP[2-37].</p>
+</section>
+</section>
+<section id="multiple-transducer-inputs">
+<h2>multiple transducer inputs<a class="headerlink" href="#multiple-transducer-inputs" title="Permalink to this headline">¶</a></h2>
+<p>If transducers are not running in parallel, i.e. switching between, It should be evaluated online.</p>
+</section>
+<section id="co-adaptive-transducer-evaluation">
+<h2>Co-adaptive transducer evaluation<a class="headerlink" href="#co-adaptive-transducer-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>co-adaptive algorithms run by different mechanism, e.g. using future space[2-26,2-27], leveraging classifier parameter[2-28,2-29].</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>supervised</dt><dd><p>The translator parameter is adjusted according to the subject’s mental state, cued and supervised. If the subject’s mental strategy is expected to change over time, it must be evaluated online. Multi-group experiment was used to evaluate different co-adaptive algorithms. [2-40]perceived loss of control can be used to estimate whether the clssifier needs to be corrected again. A data expansion method [2-28] can alleviate the differences between subjects.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>unsupervised</dt><dd><p>It mainly solves non stationary issues, which may be affected by many aspects, such as electrode placement, subject’s mental strategy change and fatigue. Offline and simulated online can be used as evaluation method.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="static-transducer-evaluation">
+<h2>Static transducer evaluation<a class="headerlink" href="#static-transducer-evaluation" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Besides standard already-exist pipelines to evaluate the performance of an algorithm in the context of brain-computer interface, there should be adequate design space left over for novel methods targeted at non-traditional tasks, e.g. predicting favored human face from subject’s EEG signal[???], which require appropriate metrics to be selected or established.</p>
+<p>There are three major factors that need to be considered when chosing a right evaluation metric, namely 1.) how should we divide subjects into groups? 2.) how should the datasets to be divided into training set and test set? 3.) should the algorithm to be evaluated online or on prerecorded data?</p>
+<p>By introducing three typical evaluation methods, we demonstrate how these parameters are chosen in our package to provide a basic estimation of how well trained algorithm might perform in test session.</p>
+</div></blockquote>
+<p>At the same time, reporting performance needs to follow certain guidelines:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>the evaluation procedure is valid from a statistical and machine learning point of view</p></li>
+<li><p>this procedure is described in sufficient detail</p></li>
+</ol>
+</div></blockquote>
+<section id="online-evaluation">
+<h3>Online evaluation<a class="headerlink" href="#online-evaluation" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>In online evaluation model should be given in advance. Although it is time-consuming and can only be applied to one model at a time, online methods give a more precise estimation of model’s performance.</p>
+<p>Online evaluation should make sure of the following constraints:</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Subject can receive real-time feedback and adjust their mental states accordingly</p></li>
+<li><p>BCI system must run in real-time.</p></li>
+</ol>
+</section>
+<section id="simulated-online-evaluation">
+<h3>Simulated online evaluation<a class="headerlink" href="#simulated-online-evaluation" title="Permalink to this headline">¶</a></h3>
+<p>Compared to online evaluation which runs in a closed-loop, Simulated online evaluation is not suited on experiments that might have training effects on subjects. Reactive paradigms are more suited to this method.</p>
+</section>
+<section id="offline-evaluation">
+<h3>Offline evaluation<a class="headerlink" href="#offline-evaluation" title="Permalink to this headline">¶</a></h3>
+<p>Offline evaluation should consider the following factors:</p>
+<ol class="arabic simple">
+<li><p>the statistical significance of the reported results</p></li>
+<li><p>how well the results translate to online BCI operation (factors:temporal drift,feedback)</p></li>
+</ol>
+</section>
+<section id="offline-hold-out">
+<h3>Offline hold-out<a class="headerlink" href="#offline-hold-out" title="Permalink to this headline">¶</a></h3>
+<p>It is suggested not to shuffle datasets as to simulate the non-stationary characteristics of EEG-signal, represanting the alternation of subject’s mental state after a tiring session.</p>
+</section>
+<section id="offline-cross-validation">
+<h3>Offline cross-validation<a class="headerlink" href="#offline-cross-validation" title="Permalink to this headline">¶</a></h3>
+<p>It is worth mentioning that take the best perfoming fold results in biased estimate of model’s generalization abbility.</p>
+</section>
+<section id="offline-nested-cross-validation">
+<h3>Offline nested cross-validation<a class="headerlink" href="#offline-nested-cross-validation" title="Permalink to this headline">¶</a></h3>
+<p>This is used for evaluating model’s generalization abbility and will not return a specific model. Biased effect brought by cross_validation will go worse when
+trial number is small, so it is suggested to use nested cross-validation under such condition. It is still worth mentioning that data from a single session should not
+appear seperately in a train-test pair.</p>
+<p>&gt; [1] Billinger M , Daly I , Kaiser V , et al. Is It Significant? Guidelines for Reporting BCI Performance[M]. Springer Berlin Heidelberg, 2012.</p>
+<p>&gt; [2] Thomas E , Dyson M , Clerc M . An analysis of performance evaluation for motor-imagery based BCI[J]. Journal of Neural Engineering, 2013, 10(3):031001.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Perfromance Evaluation</a><ul>
+<li><a class="reference internal" href="#feedback-evaluation">Feedback evaluation</a></li>
+<li><a class="reference internal" href="#assistive-technology-evaluation">Assistive technology evaluation</a></li>
+<li><a class="reference internal" href="#control-interface-evaluation">Control Interface evaluation</a><ul>
+<li><a class="reference internal" href="#reinforcement-information">reinforcement information</a></li>
+<li><a class="reference internal" href="#errp-detector">ErrP detector</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multiple-transducer-inputs">multiple transducer inputs</a></li>
+<li><a class="reference internal" href="#co-adaptive-transducer-evaluation">Co-adaptive transducer evaluation</a></li>
+<li><a class="reference internal" href="#static-transducer-evaluation">Static transducer evaluation</a><ul>
+<li><a class="reference internal" href="#online-evaluation">Online evaluation</a></li>
+<li><a class="reference internal" href="#simulated-online-evaluation">Simulated online evaluation</a></li>
+<li><a class="reference internal" href="#offline-evaluation">Offline evaluation</a></li>
+<li><a class="reference internal" href="#offline-hold-out">Offline hold-out</a></li>
+<li><a class="reference internal" href="#offline-cross-validation">Offline cross-validation</a></li>
+<li><a class="reference internal" href="#offline-nested-cross-validation">Offline nested cross-validation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="parameterSearch.html"
+                          title="previous chapter">Hyper-parameter Search of DL-BCI model</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="compareCSP.html"
+                          title="next chapter">Comparing different CSP models</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/performance.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="compareCSP.html" title="Comparing different CSP models"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Hyper-parameter Search of DL-BCI model"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Perfromance Evaluation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

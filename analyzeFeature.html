@@ -1,0 +1,187 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Analysis of EEG features &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Hyper-parameter Search of DL-BCI model" href="parameterSearch.html" />
+    <link rel="prev" title="Transfer Learning using Rest-state Target data" href="RestData.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Hyper-parameter Search of DL-BCI model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="RestData.html" title="Transfer Learning using Rest-state Target data"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis of EEG features</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="analysis-of-eeg-features">
+<h1>Analysis of EEG features<a class="headerlink" href="#analysis-of-eeg-features" title="Permalink to this headline">¶</a></h1>
+<p>Import necessary packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.datasets.moabb</span> <span class="kn">import</span> <span class="n">MOABBDataset</span><span class="p">,</span><span class="n">moabb_dataset_list</span>
+<span class="kn">from</span> <span class="nn">Offline.profile.manifest</span> <span class="kn">import</span> <span class="n">BugZero</span>
+<span class="kn">from</span> <span class="nn">Offline.processing.preprocess</span> <span class="kn">import</span> <span class="n">Preprocessor</span>
+<span class="kn">from</span> <span class="nn">Offline.models.CSP.FBCSP</span> <span class="kn">import</span> <span class="n">FBCSP</span>
+<span class="kn">from</span> <span class="nn">Paradigm.base</span> <span class="kn">import</span> <span class="n">OfflineParadigm</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">CSPFilter</span><span class="p">,</span><span class="n">CSPFactory</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Analysis</span> <span class="kn">import</span> <span class="n">classifibility</span>
+</pre></div>
+</div>
+<p>Define datasets, preprocess pipeline and model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">MOABBDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">moabb_dataset_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="n">MOABBDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">moabb_dataset_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+
+<span class="p">}</span>
+
+<span class="n">preps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:[</span><span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;pick&#39;</span><span class="p">,</span><span class="n">picks</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Define algorithm to train and analyze feature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">algs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="n">CSPFactory</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">FBCSP</span><span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span><span class="n">CSPFilter</span><span class="p">(</span><span class="n">filter_func</span><span class="o">=</span><span class="n">classifibility</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now define paradigm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span> <span class="o">=</span> <span class="n">OfflineParadigm</span><span class="p">(</span><span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span><span class="n">protocols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">algorithms</span><span class="o">=</span><span class="n">algs</span><span class="p">,</span><span class="n">control_signal_mode</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Difine model and start training:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="n">fbcsp</span> <span class="o">=</span> <span class="n">FBCSP</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">window_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">clf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="n">select_ratio</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">h_freq</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span><span class="n">n_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="n">train_X</span><span class="p">,</span><span class="n">train_y</span><span class="p">),</span> <span class="p">(</span><span class="n">test_X</span><span class="p">,</span><span class="n">test_y</span><span class="p">)</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dataset_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="n">fbcsp</span><span class="p">,</span><span class="n">subject_mode</span><span class="o">=</span><span class="s1">&#39;subject_dependent&#39;</span><span class="p">,</span><span class="n">train_mode</span><span class="o">=</span><span class="s1">&#39;hold_out&#39;</span><span class="p">,</span>
+                        <span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">train_r</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="n">n_fold</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="visualization-of-train-test-data-distribution-using-t-nsre">
+<h2>Visualization of Train-Test data distribution using t-NSRE<a class="headerlink" href="#visualization-of-train-test-data-distribution-using-t-nsre" title="Permalink to this headline">¶</a></h2>
+<p>Check Train-data and Test-data’s distribution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span><span class="o">.</span><span class="n">algorithms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">para</span><span class="o">.</span><span class="n">algorithms</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">visualize_train_test_dist</span><span class="p">(</span><span class="n">train_X</span><span class="o">=</span><span class="n">train_X</span><span class="p">,</span><span class="n">train_y</span><span class="o">=</span><span class="n">train_y</span><span class="p">,</span><span class="n">test_X</span><span class="o">=</span><span class="n">test_X</span><span class="p">,</span><span class="n">test_y</span><span class="o">=</span><span class="n">test_y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/analyzeFeature_f6.png" src="_images/analyzeFeature_f6.png" />
+</section>
+<section id="visualization-of-features-over-time">
+<h2>Visualization of features over-time<a class="headerlink" href="#visualization-of-features-over-time" title="Permalink to this headline">¶</a></h2>
+<p>Check time-cource of the transformed feature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span><span class="o">.</span><span class="n">track_time</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">dataset_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span><span class="n">n_inter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;session_E&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/analyzeFeature_f7.png" src="_images/analyzeFeature_f7.png" />
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Analysis of EEG features</a><ul>
+<li><a class="reference internal" href="#visualization-of-train-test-data-distribution-using-t-nsre">Visualization of Train-Test data distribution using t-NSRE</a></li>
+<li><a class="reference internal" href="#visualization-of-features-over-time">Visualization of features over-time</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="RestData.html"
+                          title="previous chapter">Transfer Learning using Rest-state Target data</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="parameterSearch.html"
+                          title="next chapter">Hyper-parameter Search of DL-BCI model</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/analyzeFeature.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="parameterSearch.html" title="Hyper-parameter Search of DL-BCI model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="RestData.html" title="Transfer Learning using Rest-state Target data"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis of EEG features</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

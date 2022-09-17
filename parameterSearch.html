@@ -1,0 +1,201 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Hyper-parameter Search of DL-BCI model &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Perfromance Evaluation" href="performance.html" />
+    <link rel="prev" title="Analysis of EEG features" href="analyzeFeature.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="performance.html" title="Perfromance Evaluation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="analyzeFeature.html" title="Analysis of EEG features"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Hyper-parameter Search of DL-BCI model</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="hyper-parameter-search-of-dl-bci-model">
+<h1>Hyper-parameter Search of DL-BCI model<a class="headerlink" href="#hyper-parameter-search-of-dl-bci-model" title="Permalink to this headline">¶</a></h1>
+<p>This is an example of parameter search on MOABB datasets.</p>
+<p>import necessary packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.datasets.moabb</span> <span class="kn">import</span> <span class="n">MOABBDataset</span><span class="p">,</span><span class="n">moabb_dataset_list</span>
+<span class="kn">from</span> <span class="nn">Offline.profile.manifest</span> <span class="kn">import</span> <span class="n">BugZero</span>
+<span class="kn">from</span> <span class="nn">Offline.processing.preprocess</span> <span class="kn">import</span> <span class="n">Preprocessor</span><span class="p">,</span><span class="n">exponential_moving_standardize</span>
+<span class="kn">from</span> <span class="nn">Paradigm.base</span> <span class="kn">import</span> <span class="n">ModuleAdjustParadigm</span>
+<span class="kn">from</span> <span class="nn">Offline.trainning.Factory</span> <span class="kn">import</span> <span class="n">SkorchFactory</span><span class="p">,</span><span class="n">SkorchRandSearch</span><span class="p">,</span><span class="n">SkorchGridSearch</span>
+</pre></div>
+</div>
+<p>create dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="n">MOABBDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">moabb_dataset_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define preprocessing pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">low_cut_hz</span> <span class="o">=</span> <span class="mf">4.</span>
+<span class="n">high_cut_hz</span> <span class="o">=</span> <span class="mf">38.</span>
+<span class="n">factor_new</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">init_block_size</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">preps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:[</span><span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;pick&#39;</span><span class="p">,</span><span class="n">picks</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">),</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">),</span>  <span class="c1"># Convert from V to uV</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">),</span>  <span class="c1"># Bandpass filter</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="n">exponential_moving_standardize</span><span class="p">,</span>  <span class="c1"># Exponential moving standardization</span>
+                    <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">),</span>
+    <span class="n">Preprocessor</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define machine learning model and trainning algorithms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Offline.models.NeuralNet.ShallowConv</span> <span class="kn">import</span> <span class="n">Replicator</span>
+<span class="n">alg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="n">SkorchFactory</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">Replicator</span><span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span><span class="n">SkorchGridSearch</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">Replicator</span><span class="p">),</span>
+    <span class="mi">3</span><span class="p">:</span><span class="n">SkorchRandSearch</span><span class="p">(</span><span class="n">Model</span><span class="o">=</span><span class="n">Replicator</span><span class="p">,</span><span class="n">n_iter</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>define Paradigm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span> <span class="o">=</span> <span class="n">ModuleAdjustParadigm</span><span class="p">(</span><span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span><span class="n">protocols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">algorithms</span><span class="o">=</span><span class="n">alg</span><span class="p">,</span><span class="n">control_signal_mode</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>prepare parameters to search:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">loguniform</span><span class="p">,</span><span class="n">uniform</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">BruteForceNet</span><span class="p">(</span><span class="n">n_chan</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">depth_fun</span><span class="o">=</span><span class="s1">&#39;default_0&#39;</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_sz</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lr&#39;</span><span class="p">:</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span><span class="mf">1e-2</span><span class="p">),</span>
+    <span class="s1">&#39;module__L&#39;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;module__kernel_sz&#39;</span><span class="p">:[</span><span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;module__n_chan&#39;</span><span class="p">:[</span><span class="mi">22</span><span class="p">],</span>
+    <span class="s1">&#39;module__time_step&#39;</span><span class="p">:[</span><span class="mi">200</span><span class="p">],</span>
+    <span class="s1">&#39;module__depth_fun&#39;</span><span class="p">:[</span><span class="s1">&#39;default_0&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;module__n_classes&#39;</span><span class="p">:[</span><span class="mi">4</span><span class="p">],</span>
+    <span class="s1">&#39;module__dropout_p&#39;</span><span class="p">:</span><span class="n">uniform</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.98</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>begin search:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gs</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">search_model</span><span class="p">(</span><span class="n">preprocesser_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">dataset_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                    <span class="n">subject_mode</span><span class="o">=</span><span class="s1">&#39;subject_dependent&#39;</span><span class="p">,</span><span class="n">trial_start_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">trial_end_offset_seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>check signle parameter’s effect on performance using boxplot:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">boxplot_res</span><span class="p">(</span><span class="n">gs</span><span class="p">,[</span><span class="s1">&#39;module__n_filter_time&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/parameterSearch_f1.png" src="_images/parameterSearch_f1.png" />
+<p>or normal plot:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot_res</span><span class="p">(</span><span class="n">gs</span><span class="p">,</span><span class="s1">&#39;module__n_filter_time&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/parameterSearch_f2.png" src="_images/parameterSearch_f2.png" />
+<p>check group of parameters’ effect on performance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">param3d_viz</span><span class="p">(</span><span class="n">gs</span><span class="p">,[</span><span class="s1">&#39;lr&#39;</span><span class="p">,</span><span class="s1">&#39;module__L&#39;</span><span class="p">,</span><span class="s1">&#39;module__dropout_p&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>results are shown below:</p>
+<img alt="_images/parameterSearch_f3.png" src="_images/parameterSearch_f3.png" />
+<p>write results to file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">para</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span><span class="n">algorithm_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">,</span><span class="s1">&#39;module__n_filter_time&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Full code download:</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="analyzeFeature.html"
+                          title="previous chapter">Analysis of EEG features</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="performance.html"
+                          title="next chapter">Perfromance Evaluation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/parameterSearch.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="performance.html" title="Perfromance Evaluation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="analyzeFeature.html" title="Analysis of EEG features"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Hyper-parameter Search of DL-BCI model</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

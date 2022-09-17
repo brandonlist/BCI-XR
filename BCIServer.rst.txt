@@ -1,0 +1,35 @@
+The BCI Server
+===============
+
+explain in detail the 5 layer 
+
+Network Layer
+--------------
+
+
+Service Layer
+--------------
+
+
+Algorithm Layer
+----------------
+
+
+GameObject Layer
+-----------------
+
+
+Logic Layer
+------------
+
+Calibration Logic
+^^^^^^^^^^^^^^^^^^
+
+Training Logic
+^^^^^^^^^^^^^^^
+
+Online Logic
+^^^^^^^^^^^^^
+
+Trial Layer
+------------

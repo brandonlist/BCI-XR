@@ -1,0 +1,98 @@
+An Introduction to Paradigm
+============================
+
+This package target at three basic users: Paradigm designers, algorithm designers and end-users. The basic procedure for end-users to use this package is to:
+
+1. Load built-in public/own datasets
+2. Define a paradigm
+3. Train a predefined model or group of models
+4. For offline users, run analysis on given data
+5. For online users, build transmission path to target application
+
+
+Base Paradigm class: OfflineParadigm
+-------------------------------------
+
+To start a OfflineParadigm, pass in a set of attributes to the __init__ function:
+
+1. Datasets
+2. Preprocessors
+3. Algorithms
+4. Inspectors(optional)
+
+We will introduce them in the next several chapters.
+
+load built-in publicly-available datasets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Several publicly-available datasets are available for algorithm developers: `MOABB datasets <https://github.com/NeuroTechX/moabb>`_, `BCICompetition datasets <https://www.bbci.de/competition/>`_.
+
+Before using these datasets, make sure to write your data path to .\Offline\profile\manifest.py, for MOABB datasets::
+
+    mne_path = YOUR_OWN_MNE_DATAPATH
+
+    mne.set_config('MNE_DATA',mne_path)
+    mne.set_config('MNE_DATASETS_ALEXEEG_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_BNCI_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_BRAININVADERS_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_EEGBCI_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_GIGADB_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_MAMEM1_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_MAMEM2_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_MAMEM3_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_NAKANISHI_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_SSVEPEXO_PATH',mne_path)
+    mne.set_config('MNE_DATASETS_WANG_PATH',mne_path)
+
+For BCI competition datasets::
+
+    BCIC_dir = YOUR_OWN_BCI_COMPETITION_DATAPATH
+
+Also for BCI competition datasets, files have to be arranged like this:
+
+use pre-defined preprocesser
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+datasets are by definition a dictionary of <class Offline.dataset.base.BaseConcatDataset> instance or its sub-classes instance.
+
+define a MOABBdatasets like this::
+
+    datasets = {
+        1: MOABBDataset(dataset_name='BNCI2014001',subject_ids=[1]),
+        2: MOABBDataset(dataset_name='BNCI2014001',subject_ids=[2]),
+    }
+
+where 1 and 2 are refered in the paradigm as dataset_id, which can be anything for convenience. 
+
+use pre-defined algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+algorithms refers to classes that are designed to train model, analyze features or select optimal channels, which follows
+a starndard interface protocol and can be re-designed freely by algorithm developers. Here we use the predifined <class SkorchFactory> 
+that train deep convolution networks using skorch library `Skorch library <https://skorch.readthedocs.io/en/stable/>`_::
+
+    alg = {
+        1: SkorchFactory(Model=ShallowFBCSPNet,max_epochs=250),
+    }
+
+define inspectors of a paradigm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+defien predefined inspectors::
+
+    ispt = {
+        1:SkorchInspector(InspectorSyn(pos_label=None),cuda=True),
+    }
+
+define paradigm
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Now at last we define a paradigm like this::
+
+    from Paradigm.base import OfflineParadigm
+    para = OfflineParadigm(preprocess=preprocesser,algorithms=algorithms,datasets=datasets,inpectors=inspectors)
+
+Base Paradigm class: OnlineParadigm
+-------------------------------------
+
+The basic definition of OnlineParadigm is almost the same with OfflineParadigm except for Unity interface, which we will discuss in next session.

@@ -1,0 +1,353 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>An Introduction to trainning methods of Paradigm &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Develop your own algorithm using Paradigm-API" href="developOwnAlg.html" />
+    <link rel="prev" title="An Introduction to Paradigm" href="introduction.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="developOwnAlg.html" title="Develop your own algorithm using Paradigm-API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="An Introduction to Paradigm"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">An Introduction to trainning methods of Paradigm</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="an-introduction-to-trainning-methods-of-paradigm">
+<h1>An Introduction to trainning methods of Paradigm<a class="headerlink" href="#an-introduction-to-trainning-methods-of-paradigm" title="Permalink to this headline">¶</a></h1>
+<section id="definition">
+<h2>Definition<a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h2>
+<p>Basically paradigm contains two kinds of training protocols: Subject-dependent and Subject-Transfer. The former
+use part of one subject’s data as train set and/or valid set, then test on that specific subject. The latter involves
+leveraging other subject’s data for trainning and validation, and finally test on target subject’s whole/part data.</p>
+<p>There are three type of Subject-Transfer protocols:</p>
+<p>1.To use all of other subjects’ data and non of target subject’s data as training data.</p>
+<p>2.To use all of other subjects’ data and minimal target subject’s data as training data.</p>
+<p>3.To use all of other subjects’ data and rest-state data from target subject as training data.</p>
+<p>These protocols are used to improve certain target capacity of the given BCI model, as listed below:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 14%" />
+<col style="width: 10%" />
+<col style="width: 8%" />
+<col style="width: 53%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Paradigm to use</p></th>
+<th class="head"><p>subject mode</p></th>
+<th class="head"><p>train mode</p></th>
+<th class="head"><p>evaluation</p></th>
+<th class="head"><p>Target capabilities</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NonTargetDataParadigm</p></td>
+<td><p>subject_transfer_unlabel</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-subject</p></td>
+<td><p>generalize over subjects within/across datasets calibration-free</p></td>
+</tr>
+<tr class="row-odd"><td><p>NonTargetDataParadigm</p></td>
+<td><p>subject_transfer_unlabel</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-subject</p></td>
+<td><p>remain high performance over time calibration-free</p></td>
+</tr>
+<tr class="row-even"><td><p>SubjectDependentParadigm</p></td>
+<td><p>subject_dependent</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-subject</p></td>
+<td><p>generalize over subjects within/across datasets once calibrated on target subject</p></td>
+</tr>
+<tr class="row-odd"><td><p>SubjectDependentParadigm</p></td>
+<td><p>subject_dependent</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-session</p></td>
+<td><p>remain high performance over time once calibrated</p></td>
+</tr>
+<tr class="row-even"><td><p>LittleTargetDataParadigm</p></td>
+<td><p>subject_transfer_label</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-subject</p></td>
+<td><p>boost performance by leveraging other subjects’ data and using minimum target subject’s data</p></td>
+</tr>
+<tr class="row-odd"><td><p>SubjectDependentParadigm</p></td>
+<td><p>subject_dependent</p></td>
+<td><p>cross validation</p></td>
+<td><p>inter-session</p></td>
+<td><p>improved time-invariant accuracy by adapting over-time</p></td>
+</tr>
+</tbody>
+</table>
+<p>In each training protocols, there are three ways to implement machine learning procedure, namely hold-out, cross-validation,
+and cross validation, as pointed out in [??intro-ml-bci]. In our implementaion, <strong>hold-out</strong> seperate the dataset randomly into
+train-set and test-set;  <strong>cross validation</strong> devide whole datasets into folds for n times repeatedly then use each fold as test set;
+<strong>nested cross validation</strong> divide train set in each fold defined in cross validation into inner folds, then apply cross validation
+on this inner fold. As computational-expensive as it is, <strong>nested cross validation</strong> can provide the most modest estimate of model’s
+generalization abbility as possible.</p>
+<p>We use two parameter: <strong>subject_mode</strong> and <strong>train_mode</strong> to define the above methods. They are used in several methods of
+Paradigm, e.g. train_model, provide_Xys, provide_Xs, inspect. The definition of each combination are provided below:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 14%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>subject_mode</p></th>
+<th class="head"><p>train_mode</p></th>
+<th class="head"><p>application</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>subject_dependent</p></td>
+<td><p>hold_out</p></td>
+<td><p>Use hold-out method to train one model using data from target subject</p></td>
+</tr>
+<tr class="row-odd"><td><p>subject_dependent</p></td>
+<td><p>cross_validation</p></td>
+<td><p>Use cross-validation method to train n_fold model using data from target subject</p></td>
+</tr>
+<tr class="row-even"><td><p>subject_dependent</p></td>
+<td><p>nested_cross_validation</p></td>
+<td><p>Use nested_cross_validation to evaluate model’s subject-dependent capabilities</p></td>
+</tr>
+<tr class="row-odd"><td><p>subject_transfer</p></td>
+<td><p>hold_out</p></td>
+<td><p>Use all train-data from <strong>train_subjects</strong> to evaluate on all data from <strong>test_subject</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>subject_transfer</p></td>
+<td><p>cross_validation</p></td>
+<td><p>Repeat the procedure of subject_transfer-hold_out for n_subjects times over all subjects</p></td>
+</tr>
+<tr class="row-odd"><td><p>subject_transfer_label</p></td>
+<td><p>hold_out</p></td>
+<td><p>Use all train-data from <strong>train_subjects</strong> and minimal data from <strong>test_subject</strong> to evaluate on <strong>test_subject</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>subject_transfer_label</p></td>
+<td><p>cross_validation</p></td>
+<td><p>Repeat the procedure of subject_transfer_label-hold_out for n_subjects times over all subjects</p></td>
+</tr>
+<tr class="row-odd"><td><p>subject_transfer_unlabel</p></td>
+<td><p>hold_out</p></td>
+<td><p>Use all train-data from <strong>train_subjects</strong> and rest-state data from <strong>test_subject</strong> to evaluate on <strong>test_subject</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>subject_transfer_unlabel</p></td>
+<td><p>cross_validation</p></td>
+<td><p>Repeat the procedure of subject_transfer_unlabel-hold_out for n_subjects times over all subjects</p></td>
+</tr>
+</tbody>
+</table>
+<p>For more detailed information, turn to:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developOwnAlg.html">Develop your own algorithm using Paradigm-API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developOwnAlg.html#training-algorithm">Training algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developOwnAlg.html#parameter-search-algorithm">Parameter Search algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developOwnAlg.html#inspector-algorithm">Inspector algorithm</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="estimating-calibration-trial-number">
+<h2>Estimating calibration trial number<a class="headerlink" href="#estimating-calibration-trial-number" title="Permalink to this headline">¶</a></h2>
+<p>To guarantee high ITR communication of BCI system in test phase, a calibration process which contains no information output is required.
+The overall purpose is to acquire a high-accuracy &amp; long-lasting BCI decoding model using most minimal calibration data possible,
+and the problem being: how to estimate trial number required by a certain expected accuracy over a predetermined period. We further decompose
+this issue into two domain: the evaluation domain and the calibration domain.</p>
+<section id="evaluation-domain-generalization-ability">
+<h3>Evaluation domain: generalization ability<a class="headerlink" href="#evaluation-domain-generalization-ability" title="Permalink to this headline">¶</a></h3>
+<p>EEG signal possess mainly three variant aspect: time-wise, subject-wise and task/environment-wise. Therefore, decoding models are required to have
+corresponding generalization abilitie: time-invariant generalization, subject-invariant generalization and task/environment-invariant generalization.</p>
+<p>Requirements for generalization ability are scenario-dependent. A simple demonstration will be shown below:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 16%" />
+<col style="width: 17%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>application</p></th>
+<th class="head"><p>task-invariant</p></th>
+<th class="head"><p>time-invariant</p></th>
+<th class="head"><p>subject-invariant</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BCI cursor designed for SCI patients</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>BCI cursor for new Facebook HMD</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>BCI wheel chair for SCI patients</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exprience device on BCI-Expo</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="simple">
+<dt>Simple classification metrics (accuracy, precision, roc) are not informative enough to evaluate 3-fold generalization abilities. A more precise evaluation</dt><dd><p>technique is required.</p>
+</dd>
+</dl>
+</section>
+<section id="calibration-domain-cost-of-calibration">
+<h3>Calibration domain: Cost of calibration<a class="headerlink" href="#calibration-domain-cost-of-calibration" title="Permalink to this headline">¶</a></h3>
+<p>Apart from generalization power, we hope to commit minimum calibration effort. Achieving optimal accuracy by
+calibrating repeatedly is not favorable. The need for reducing calibration cost is also scenario-dependent:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 44%" />
+<col style="width: 56%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>BCI cursor designed for SCI patients</p></td>
+<td><p>No significant benefit in reducing calibration cost</p></td>
+</tr>
+<tr class="row-even"><td><p>BCI cursor for new Facebook HMD</p></td>
+<td><p>Minimal calibration cost is prefered</p></td>
+</tr>
+<tr class="row-odd"><td><p>BCI wheel chair for SCI patients</p></td>
+<td><p>Minimal calibration is prefered for safety reasons</p></td>
+</tr>
+<tr class="row-even"><td><p>Exprience device on BCI-Expo</p></td>
+<td><p>Minimal calibration cost is prefered</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="combined-perspective-minimum-cost-maximum-ability">
+<h3>Combined perspective: minimum cost, maximum ability<a class="headerlink" href="#combined-perspective-minimum-cost-maximum-ability" title="Permalink to this headline">¶</a></h3>
+<p>To sum up, a generalization ability-calibration cost ratio is required to precisely evaluate the calibration aspect of a BCI model.
+We design the CalibEval paradigm to meet this purpose. In detail, this paradigm have following features to achieve optimized selection
+of training and evaluation of BCI model:</p>
+<p>see also:
+evaluate model’s preference for invariantion type
+evaluate model’s capacity by alternating training procedure</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">An Introduction to trainning methods of Paradigm</a><ul>
+<li><a class="reference internal" href="#definition">Definition</a></li>
+<li><a class="reference internal" href="#estimating-calibration-trial-number">Estimating calibration trial number</a><ul>
+<li><a class="reference internal" href="#evaluation-domain-generalization-ability">Evaluation domain: generalization ability</a></li>
+<li><a class="reference internal" href="#calibration-domain-cost-of-calibration">Calibration domain: Cost of calibration</a></li>
+<li><a class="reference internal" href="#combined-perspective-minimum-cost-maximum-ability">Combined perspective: minimum cost, maximum ability</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="previous chapter">An Introduction to Paradigm</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="developOwnAlg.html"
+                          title="next chapter">Develop your own algorithm using Paradigm-API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/training.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="developOwnAlg.html" title="Develop your own algorithm using Paradigm-API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="An Introduction to Paradigm"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">An Introduction to trainning methods of Paradigm</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

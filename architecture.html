@@ -1,0 +1,191 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The Overall Python-Unity Architecture &#8212; MetaBCI-VR 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The BCI Server" href="BCIServer.html" />
+    <link rel="prev" title="2-class MI datasets decoding: an example" href="VRlabMI.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="BCIServer.html" title="The BCI Server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="VRlabMI.html" title="2-class MI datasets decoding: an example"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Overall Python-Unity Architecture</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-overall-python-unity-architecture">
+<h1>The Overall Python-Unity Architecture<a class="headerlink" href="#the-overall-python-unity-architecture" title="Permalink to this headline">¶</a></h1>
+<section id="as-acquisition-algorithm-application">
+<h2>3As: Acquisition-Algorithm-Application<a class="headerlink" href="#as-acquisition-algorithm-application" title="Permalink to this headline">¶</a></h2>
+<p>Our package provides a basic implementaion of closed-loop BCI development kit upon which cutting-edge BCI applications can be constructed with minimal
+amount of code. To be more specific, we provide a architecture that can adjust to different circumstances by decoupling the closed-loop BCI into three
+major parts:</p>
+<ol class="arabic simple">
+<li><p>Signal Acquisition (Acquisition)</p></li>
+<li><p>Signal Processing  (Algorithm)</p></li>
+<li><p>Feedback and Stimulation (Application)</p></li>
+</ol>
+<p>In short, EEG signal is acquired by hardware devices, then read by acquisition software (usually provided by hardware companies) and send out on a TCP/IP
+socket. The Algorithm receives the data via TCP/IP and provide command in real-time, then transmit it to a visual interface (i.e. Application) presented to the user
+, which is usually a 2D panal or 3D environment.</p>
+<p>We implement three programs corresponding to the three components mentioned above. _The Streaming Client receives EEG data packet in real-time from EEG Data Servers
+(for Instance the Curry8 Software opens a streaming server while collecting EEG data) via TCP/IP. After the EEG data streaming pipeline is set up, the streaming client
+is then connected to a BCI server. _The BCI Server make use of algorithms trained in the offline paradigm to produce commands at a user-defined update frequency. Finally
+_The Application Client communicates with the BCI server automatically and provides visual feedback to user via computer displays or VR devices.</p>
+<ol class="arabic simple">
+<li><p>Signal Acquisition (Acquisition)         -&gt;    Streaming Client</p></li>
+<li><p>Signal Processing  (Algorithm)           -&gt;    BCI Server</p></li>
+<li><p>Feedback and Stimulation (Application)   -&gt;    Application Client</p></li>
+</ol>
+<p>The architecture is shown below:</p>
+<p>IMG HORIZONTAL</p>
+<p>The First two components of BCI-loop(Acquisition, Algorithm) are abstracted and exposed as variables of Singleton classes for BCI application developers.
+Since robust paradigms for EEG-based BCI are limited to a tested few and are implemented in our development kit, application developers would have no need to
+consider the Acquisition or the Algorithm part of their BCI loop as well as the communication between Algorithm and Application: it’s all taken care of.
+_The Application Client running in Unity will maintain a list of variables that are synchronized with BCI Server, represanting current results computed by BCI algorithms.
+These variables are predefined, compatible with BCI definitions and easy to understand(e.g. motor-imagery state: left hand). To get access to these variables in real-time,
+one just have to write one line of code in the Update() function of any MonoBehaviour script(although the exact update frequency depends on the processing speed of Algorithm).</p>
+<p>For ambitious developers the word “predefined” is just annoying. To develop more sophisticated paradigms, absolute control of the processing logic, data streaming details and
+communication protocols are required. As will discuss later, the BCI Server as well as the Application Client is designed to have a hierarchical structure. The basic functions
+such as adding marker or synchronizing motor-imagery states are designed to be Services that can be called from higher level classes. These services hides the  implementaion details
+of network communication between BCI Server and Application Client, thus decreasing development time dramatically. Developers are able to design new Paradigms using these built-in
+Services, and are also encouraged to design new Services using lower level components from Network Layer. It is easy to extend the package since each layer is decoupled from
+each other, and have a relatively clean definition.</p>
+<p>Last but not the least, for algorithm developers who may not have interested in real-time implementaion of closed-loop BCI, our package still provide a usefull
+functionality: simulated inspection. Basically _The Streaiming Client can read from local EEG data files in a simulated-online way, during which visualizations of EEG spatial and
+spectral features can be displayed in real-time. By inspecting the output of algorithm along with the multi-dimentional features, algorithm developers can have a
+intuitive perspective of how their models are processing the physiological data stream.</p>
+</section>
+<section id="layers-architecture">
+<h2>5 Layers Architecture<a class="headerlink" href="#layers-architecture" title="Permalink to this headline">¶</a></h2>
+<p>The hierarchy of the development kit is presented as below:</p>
+<section id="network-layer">
+<h3>Network Layer<a class="headerlink" href="#network-layer" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="service-layer">
+<h3>Service Layer<a class="headerlink" href="#service-layer" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="algorithm-gameobject-layer">
+<h3>Algorithm/GameObject Layer<a class="headerlink" href="#algorithm-gameobject-layer" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="logic-layer">
+<h3>Logic Layer<a class="headerlink" href="#logic-layer" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="trial-layer">
+<h3>Trial Layer<a class="headerlink" href="#trial-layer" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The Overall Python-Unity Architecture</a><ul>
+<li><a class="reference internal" href="#as-acquisition-algorithm-application">3As: Acquisition-Algorithm-Application</a></li>
+<li><a class="reference internal" href="#layers-architecture">5 Layers Architecture</a><ul>
+<li><a class="reference internal" href="#network-layer">Network Layer</a></li>
+<li><a class="reference internal" href="#service-layer">Service Layer</a></li>
+<li><a class="reference internal" href="#algorithm-gameobject-layer">Algorithm/GameObject Layer</a></li>
+<li><a class="reference internal" href="#logic-layer">Logic Layer</a></li>
+<li><a class="reference internal" href="#trial-layer">Trial Layer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="VRlabMI.html"
+                          title="previous chapter">2-class MI datasets decoding: an example</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="BCIServer.html"
+                          title="next chapter">The BCI Server</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/architecture.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="BCIServer.html" title="The BCI Server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="VRlabMI.html" title="2-class MI datasets decoding: an example"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MetaBCI-VR 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Overall Python-Unity Architecture</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haochen Hu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

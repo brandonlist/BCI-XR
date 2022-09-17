@@ -1,0 +1,47 @@
+Develop your own algorithm using Paradigm-API 
+==============================================
+
+Training algorithm
+-------------------
+
+To develop training algorithm for paradigm.train_model, certain APIs have to be implemented according to the subject mode and train_mode used:
+
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|       subject_mode      |        train_mode     |                                              API                                             |
++=========================+=======================+==============================================================================================+
+|    subject_dependent    |        hold_out       |               train(train_X, train_y, model) , score(test_X, test_y, model)                  |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|    subject_dependent    |    cross_validation   |               train(train_X, train_y, model) , score(test_X, test_y, model)                  |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|    subject_dependent    |nested_cross_validation|               train(train_X, train_y, model) , score(test_X, test_y, model)                  |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|    subject_transfer     |        hold_out       |               train(train_X, train_y, model) , score(test_X, test_y, model)                  |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|    subject_transfer     |    cross_validation   |               train(train_X, train_y, model) , score(test_X, test_y, model)                  |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|  subject_transfer_label |        hold_out       |     train_fintune(train_X, train_y, model, little_X, little_y) , score(test_X, test_y, model)|
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+|  subject_transfer_label |    cross_validation   |    train_fintune(train_X, train_y, model, little_X, little_y) , score(test_X, test_y, model) |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+| subject_transfer_unlabel|        hold_out       |          train_adapt(train_X, train_y, model, rest_X) , score(test_X, test_y, model)         |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+| subject_transfer_unlabel|    cross_validation   |           train_adapt(train_X, train_y, model, rest_X) , score(test_X, test_y, model)        |
++-------------------------+-----------------------+----------------------------------------------------------------------------------------------+
+
+
+Parameter Search algorithm
+-----------------------------
+
+1. search(params,model)
+
+2. return_df_search(searcher, keys)
+
+
+Inspector algorithm
+-----------------------------
+
+1. inspect(test_X, test_y, model)
+
+
+
+

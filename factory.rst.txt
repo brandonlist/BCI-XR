@@ -1,0 +1,20 @@
+Use Factory to design algorithms
+=================================
+
+
+Trainning algorithms
+---------------------
+
+
+Feature Analysis algorithms
+----------------------------
+
+Wrapper methods
+^^^^^^^^^^^^^^^^
+
+Filter methods
+^^^^^^^^^^^^^^^
+
+
+Inspector algorithms
+---------------------

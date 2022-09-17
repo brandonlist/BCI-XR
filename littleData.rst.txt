@@ -1,0 +1,88 @@
+Transfer Learning using minimum Target data
+============================================
+
+example using baseline model
+------------------------------
+
+First import necessary packages::
+
+    from Offline.datasets.moabb import MOABBDataset,moabb_dataset_list
+    from Offline.profile.manifest import BugZero
+    from Offline.processing.preprocess import Preprocessor,exponential_moving_standardize
+    from Paradigm.base import LittleTargetDataParadigm
+    from Offline.trainning.Factory import SkorchFactory
+
+
+Load the example datasets::
+
+    datasets = {
+        1: MOABBDataset(dataset_name='BNCI2014001',subject_ids=[1,2,3,4,5,6,7,8,9]),
+    }
+
+
+Define the preprocess pipeline::
+
+    low_cut_hz = 4.
+    high_cut_hz = 38.
+    factor_new = 1e-3
+    init_block_size = 1000
+    preps = {
+        1:[Preprocessor('pick',picks='eeg'),
+        Preprocessor(lambda x: x * 1e6),  # Convert from V to uV
+        Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
+        Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
+                        factor_new=factor_new, init_block_size=init_block_size),
+        Preprocessor('resample',sfreq=50)
+        ],
+    }
+
+Define the training algorithms::
+
+    alg = {
+        1: SkorchFactory(Model=AttentionShallowMarkI,max_epochs=250),
+    }
+
+Define the inspector algorithm::
+
+    from Offline.trainning.Factory import SkorchInspector
+    from Offline.trainning.Inspector import InspectorSyn
+    ispt = {
+        1:SkorchInspector(InspectorSyn(pos_label=None),cuda=True),
+    }
+
+Now define the paradigm::
+
+    para = LittleTargetDataParadigm(datasets=datasets,protocols=None,algorithms=alg,control_signal_mode='active',preprocess=preps,inspectors=ispt)
+
+Load the model::
+
+    from Offline.models.braindecode.shallow_fbcsp import ShallowFBCSPNet
+    cnn = ShallowFBCSPNet(in_chans=22,n_classes=4,input_window_samples=200,final_conv_length='auto',n_filters_spat=50,n_filters_time=50)
+
+We use subject 1-8's data to train a classsifier, then apply it on subject 9. First define train_subjects and test_subject::
+
+    train_subjects = [1,2,3,4,5,6,7,8]
+    test_subjects = 9
+
+Train model on subject 1-8, then extract 10% of the target data from target subject 9 and finetune::
+
+    ans_cnn_hold_out = para.train_model(preprocesser_id=1, algorithm_id=1, dataset_id=1, model=cnn,
+                    subject_mode='subject_transfer_label', train_mode='hold_out',
+                    trial_start_offset_seconds=0,trial_end_offset_seconds=0,train_r=0.1,n_fold=None,seed=2022,verbose=True,
+                    train_subjects=train_subjects,valid_subjects=None,test_subject=test_subjects)
+
+
+
+The results rise from 0.5 to 0.707.
+
+Now run a cross-validation on whole dataset::
+
+    re_subjects, trainned_models, df_subjects = para.run_cv_on_dataset(preprocesser_id=1, algorithm_id=1, dataset_id=1,
+                                                                    model_name='ShallowConvNet',metrics=['acc','kappa','model','subject','state'],
+                                                                    trial_start_offset_seconds=0,trial_end_offset_seconds=0,
+                                                                    n_fold=None,inspector_id=1,model=cnn,train_r=0.2)
+
+
+results are shown below:
+
+.. image:: Littletarget_f16.png

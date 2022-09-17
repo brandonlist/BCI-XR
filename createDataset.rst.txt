@@ -1,0 +1,68 @@
+Datasets in MetaBCI-XR
+=======================
+
+Dataset class are sub-class of braindecode.BaseConcatDataset, with some alternation. Normally it have a datasets attribute,
+a list of BaseDataset. The **raw** attribute of the BaseDataset are mne.io.Raw object, consisting continuous EEG-data of 
+the recording sessions.
+
+There are also the shared data structure description, a dict object containing information of every raw object, i.e. subject_id,
+session_id and run_id.
+
+Load built-in publicly-available datasets
+-----------------------------------------
+
+There are for now 24 publicly available datasets, 20 from MOABB and 4 from BCI-competition. A brief introduction is given below. For more information please refer to  `MOABB datasets <https://github.com/NeuroTechX/moabb>`_, `BCICompetition datasets <https://www.bbci.de/competition/>`_ 
+for more information.
+
++-----------------------------+----------+----------+-------+----------+----------------+
+|         dataset name        | paradigm | subjects | sfreq | channels | trials/subject |
++=============================+==========+==========+=======+==========+================+
+|     moabb.datasets.AlexMI   |    MI    |     8    | 512Hz |    16    |       60       |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2014001 |    MI    |     9    | 250Hz |    22    |       576      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2014002 |    MI    |     13   | 512Hz |    15    |       160      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2014004 |    MI    |     9    | 250Hz |    3     |       560      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2015001 |    MI    |     12   | 512Hz |    13    |       400      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2015004 |    MI    |     9    | 256Hz |    30    |       400      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|    moabb.datasets.Cho2017   |    MI    |     52   | 512Hz |    64    |       200      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|   moabb.datasets.Shin2017A  |    MI    |     29   | 1000Hz|    30    |       60       |
++-----------------------------+----------+----------+-------+----------+----------------+
+|   moabb.datasets.Shin2017B  |    MI    |     29   | 1000Hz|    30    |       60       |
++-----------------------------+----------+----------+-------+----------+----------------+
+|   moabb.datasets.Weibo2014  |    MI    |     10   |  N/A  |    60    |       560      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|   moabb.datasets.SSVEPExo   |   SSVEP  |     12   |  N/A  |   N/A    |       64       |
++-----------------------------+----------+----------+-------+----------+----------------+
+| moabb.datasets.Nakanishi2015|   SSVEP  |     9    |  N/A  |   N/A    |       180      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|   moabb.datasets.Wang2016   |   SSVEP  |     34   | 250Hz |    64    |       240      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|    moabb.datasets.MAMEM1    |   SSVEP  |     10   | 250Hz |    256   |       66       |
++-----------------------------+----------+----------+-------+----------+----------------+
+|    moabb.datasets.MAMEM2    |   SSVEP  |     10   | 250Hz |    256   |       125      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|    moabb.datasets.MAMEM3    |   SSVEP  |     10   | 128Hz |    14    |       100      |
++-----------------------------+----------+----------+-------+----------+----------------+
+|    moabb.datasets.bi2013a   |   P300   |     24   | 512Hz |    16    |       3840     |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2014008 |   P300   |     8    | 256Hz |     8    |       4200     |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2014009 |   P300   |     10   |  N/A  |    16    |       1728     |
++-----------------------------+----------+----------+-------+----------+----------------+
+|  moabb.datasets.BNCI2015003 |   P300   |     10   | 256Hz |     8    |       5400     |
++-----------------------------+----------+----------+-------+----------+----------------+
+
+Create dataset using your own data
+-----------------------------------
+
+To pack your own data, deifine Offline.dataset.CustumDataset class. mne.io.Raw object is required containing following information:
+
+1. annotations of trials.
+
+2. EEG channel names following standard 10-05 montage.

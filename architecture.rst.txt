@@ -1,0 +1,78 @@
+The Overall Python-Unity Architecture
+======================================
+
+
+3As: Acquisition-Algorithm-Application
+---------------------------------------
+
+Our package provides a basic implementaion of closed-loop BCI development kit upon which cutting-edge BCI applications can be constructed with minimal
+amount of code. To be more specific, we provide a architecture that can adjust to different circumstances by decoupling the closed-loop BCI into three 
+major parts:
+
+1. Signal Acquisition (Acquisition) 
+2. Signal Processing  (Algorithm)
+3. Feedback and Stimulation (Application)
+
+In short, EEG signal is acquired by hardware devices, then read by acquisition software (usually provided by hardware companies) and send out on a TCP/IP
+socket. The Algorithm receives the data via TCP/IP and provide command in real-time, then transmit it to a visual interface (i.e. Application) presented to the user
+, which is usually a 2D panal or 3D environment.
+
+We implement three programs corresponding to the three components mentioned above. _The Streaming Client receives EEG data packet in real-time from EEG Data Servers
+(for Instance the Curry8 Software opens a streaming server while collecting EEG data) via TCP/IP. After the EEG data streaming pipeline is set up, the streaming client
+is then connected to a BCI server. _The BCI Server make use of algorithms trained in the offline paradigm to produce commands at a user-defined update frequency. Finally
+_The Application Client communicates with the BCI server automatically and provides visual feedback to user via computer displays or VR devices. 
+
+1. Signal Acquisition (Acquisition)         ->    Streaming Client
+2. Signal Processing  (Algorithm)           ->    BCI Server
+3. Feedback and Stimulation (Application)   ->    Application Client
+
+The architecture is shown below:
+
+IMG HORIZONTAL
+
+The First two components of BCI-loop(Acquisition, Algorithm) are abstracted and exposed as variables of Singleton classes for BCI application developers.
+Since robust paradigms for EEG-based BCI are limited to a tested few and are implemented in our development kit, application developers would have no need to
+consider the Acquisition or the Algorithm part of their BCI loop as well as the communication between Algorithm and Application: it's all taken care of.
+_The Application Client running in Unity will maintain a list of variables that are synchronized with BCI Server, represanting current results computed by BCI algorithms.
+These variables are predefined, compatible with BCI definitions and easy to understand(e.g. motor-imagery state: left hand). To get access to these variables in real-time,
+one just have to write one line of code in the Update() function of any MonoBehaviour script(although the exact update frequency depends on the processing speed of Algorithm).
+
+For ambitious developers the word "predefined" is just annoying. To develop more sophisticated paradigms, absolute control of the processing logic, data streaming details and 
+communication protocols are required. As will discuss later, the BCI Server as well as the Application Client is designed to have a hierarchical structure. The basic functions
+such as adding marker or synchronizing motor-imagery states are designed to be Services that can be called from higher level classes. These services hides the  implementaion details
+of network communication between BCI Server and Application Client, thus decreasing development time dramatically. Developers are able to design new Paradigms using these built-in 
+Services, and are also encouraged to design new Services using lower level components from Network Layer. It is easy to extend the package since each layer is decoupled from 
+each other, and have a relatively clean definition.
+
+Last but not the least, for algorithm developers who may not have interested in real-time implementaion of closed-loop BCI, our package still provide a usefull 
+functionality: simulated inspection. Basically _The Streaiming Client can read from local EEG data files in a simulated-online way, during which visualizations of EEG spatial and 
+spectral features can be displayed in real-time. By inspecting the output of algorithm along with the multi-dimentional features, algorithm developers can have a 
+intuitive perspective of how their models are processing the physiological data stream.
+
+
+
+5 Layers Architecture
+-----------------------
+
+The hierarchy of the development kit is presented as below:
+
+
+
+Network Layer
+^^^^^^^^^^^^^^
+
+
+Service Layer
+^^^^^^^^^^^^^^
+
+
+Algorithm/GameObject Layer
+^^^^^^^^^^^^^^
+
+
+Logic Layer
+^^^^^^^^^^^^^^
+
+
+Trial Layer
+^^^^^^^^^^^^^^
